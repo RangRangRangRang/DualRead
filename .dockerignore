@@ -1,0 +1,9 @@
+bin/
+obj/
+Uploads/
+**/bin/
+**/obj/
+.vs/
+.vscode/
+*.user
+BUILD_NOTES.md

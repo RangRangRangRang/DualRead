@@ -1,0 +1,61 @@
+@{
+    ViewData["Title"] = "Upload";
+}
+
+<div class="landing-gateway">
+    <div class="gateway-card">
+        <h1 class="gateway-title">Upload books</h1>
+        <p class="gateway-subtitle">Choose one or more .epub files, or drag them here</p>
+
+        @if (!ViewData.ModelState.IsValid)
+        {
+            <div class="key-error mb-3">@Html.ValidationSummary(true)</div>
+        }
+
+        @if (ViewBag.UploadErrors is List<(string FileName, string Reason)> uploadErrors && uploadErrors.Count > 0)
+        {
+            <div class="key-error mb-3 text-start w-100">
+                <strong>Some files failed to upload:</strong>
+                <ul class="mb-0">
+                    @foreach (var error in uploadErrors)
+                    {
+                        <li>@error.FileName: @error.Reason</li>
+                    }
+                </ul>
+            </div>
+        }
+
+        <form id="lib-upload-form" action="/Library/Upload" method="post" enctype="multipart/form-data" class="gateway-section">
+            @Html.AntiForgeryToken()
+            <label for="lib-file-input" class="upload-dropzone-large" id="lib-dropzone">
+                <div class="dropzone-icon">📁</div>
+                <div class="dropzone-text" id="lib-dropzone-label">Drag &amp; drop .epub files here or click to choose (multiple allowed)</div>
+                <input type="file" id="lib-file-input" name="epubFiles" accept=".epub" multiple hidden />
+            </label>
+
+            <ul class="upload-file-list" id="lib-file-list" hidden></ul>
+
+            <button type="submit" id="lib-btn-upload" class="btn-gateway btn-teal" disabled>Upload</button>
+
+            <div class="mt-3">
+                <a href="/Library" class="text-dim text-decoration-none">&larr; Back to Library</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <script src="~/js/upload.js" asp-append-version="true"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            initMultiFileUpload({
+                dropzoneEl: document.getElementById('lib-dropzone'),
+                fileInput: document.getElementById('lib-file-input'),
+                dropzoneLabelEl: document.getElementById('lib-dropzone-label'),
+                listEl: document.getElementById('lib-file-list'),
+                uploadBtn: document.getElementById('lib-btn-upload'),
+                defaultLabelText: 'Drag & drop .epub files here or click to choose (multiple allowed)'
+            });
+        });
+    </script>
+}

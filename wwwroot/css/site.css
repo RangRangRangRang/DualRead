@@ -1,0 +1,1121 @@
+:root {
+    --eb-bg: #121417;
+    --eb-surface: #1a1d24;
+    --eb-border: #282c37;
+    --eb-text: #e8e6e1;
+    --eb-text-dim: #9a9fa8;
+    --eb-teal: #00c9a7;
+    --eb-teal-hover: #00b395;
+}
+
+body.theme-light {
+    --eb-bg: #f8f9fa;
+    --eb-surface: #ffffff;
+    --eb-border: #e9ecef;
+    --eb-text: #212529;
+    --eb-text-dim: #6c757d;
+}
+
+body.theme-sepia {
+    --eb-bg: #f4ecd8;
+    --eb-surface: #ece0c3;
+    --eb-border: #ddcda3;
+    --eb-text: #5b4636;
+    --eb-text-dim: #8a7458;
+}
+
+* {
+    box-sizing: border-box;
+}
+
+html, body {
+    height: 100%;
+    margin: 0;
+}
+
+body {
+    background-color: var(--eb-bg);
+    color: var(--eb-text);
+    font-family: Georgia, 'Times New Roman', serif;
+    transition: background-color 0.2s ease, color 0.2s ease;
+}
+
+/* Hide Scrollbar */
+::-webkit-scrollbar {
+    display: none;
+    width: 0 !important;
+    height: 0 !important;
+}
+
+html, body, .reader-viewport, .sidebar, .sidebar-panel {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+/* ==========================================
+   1. LANDING & GATEWAY PAGE (BƯỚC 3 - CHUẨN HOÀN CHỈNH)
+   ========================================== */
+
+/* Khung nền tràn toàn màn hình */
+.landing,
+.landing-gateway {
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 40px 20px;
+    background-color: var(--eb-bg);
+    width: 100%;
+}
+
+/* Container Card chính: Phóng to 3 lần + Bo góc 90px */
+.gateway-card,
+.landing-card {
+    width: 100%;
+    max-width: 900px;
+    background: var(--eb-surface);
+    border: 2px solid var(--eb-border);
+    border-radius: 90px !important; /* Bo góc 90px theo yêu cầu */
+    padding: 55px 70px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    margin: 0 auto;
+}
+
+.gateway-title,
+.landing-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: 10px;
+    color: var(--eb-text);
+    letter-spacing: 0.02em;
+}
+
+.gateway-subtitle,
+.landing-tagline {
+    font-size: 1.1rem;
+    color: var(--eb-text-dim);
+    margin-bottom: 35px;
+}
+
+.gateway-section,
+.landing-form {
+    width: 100%;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin: 0 auto;
+}
+
+/* Khung kéo thả Upload EPUB lớn */
+.upload-dropzone-large,
+.upload-dropzone {
+    width: 100%;
+    min-height: 160px;
+    border: 2px dashed var(--eb-border);
+    border-radius: 30px;
+    background: rgba(0, 0, 0, 0.2);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 25px;
+    cursor: pointer;
+    transition: border-color 0.25s ease, background-color 0.25s ease;
+}
+
+    .upload-dropzone-large:hover,
+    .upload-dropzone:hover {
+        border-color: var(--eb-teal);
+        background: rgba(0, 201, 167, 0.05);
+    }
+
+.dropzone-icon {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+}
+
+.dropzone-text {
+    font-size: 1.1rem;
+    color: var(--eb-text-dim);
+}
+
+/* Dải phân cách (OR / HOẶC) */
+.gateway-divider,
+.landing-divider {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 30px 0;
+    position: relative;
+}
+
+    .gateway-divider::before,
+    .landing-divider::before {
+        content: '';
+        position: absolute;
+        width: 100%;
+        height: 1px;
+        background: var(--eb-border);
+        top: 50%;
+        left: 0;
+        z-index: 1;
+    }
+
+    .gateway-divider span,
+    .landing-divider span {
+        position: relative;
+        z-index: 2;
+        background: var(--eb-surface);
+        padding: 0 20px;
+        color: var(--eb-text-dim);
+        font-weight: 600;
+        font-size: 0.95rem;
+        letter-spacing: 0.1em;
+    }
+
+/* Box hiển thị Key định danh sinh tự động */
+.key-info-box {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--eb-border);
+    padding: 12px 24px;
+    border-radius: 20px;
+    margin-bottom: 24px;
+}
+
+.key-label {
+    font-size: 1rem;
+    color: var(--eb-text-dim);
+}
+
+.key-value {
+    font-family: monospace;
+    font-size: 1.2rem;
+    font-weight: 700;
+    color: var(--eb-teal);
+    letter-spacing: 0.08em;
+}
+
+.btn-copy {
+    background: none;
+    border: none;
+    font-size: 1.2rem;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+/* Ô nhập Key & các nút bấm */
+.key-input-group {
+    display: flex;
+    gap: 16px;
+    width: 100%;
+}
+
+.gateway-input,
+.landing-input {
+    flex: 1;
+    background: rgba(0, 0, 0, 0.3);
+    border: 1px solid var(--eb-border);
+    color: var(--eb-text);
+    padding: 15px 24px;
+    border-radius: 20px;
+    font-size: 1.05rem;
+    outline: none;
+    transition: border-color 0.2s ease;
+}
+
+    .gateway-input:focus,
+    .landing-input:focus {
+        border-color: var(--eb-teal);
+        background: rgba(0, 0, 0, 0.4);
+    }
+
+.btn-gateway,
+.landing-upload-btn {
+    padding: 15px 32px;
+    font-size: 1.05rem;
+    font-weight: 600;
+    border-radius: 20px;
+    cursor: pointer;
+    transition: background-color 0.2s ease, transform 0.1s ease;
+    border: none;
+    white-space: nowrap;
+}
+
+.btn-teal {
+    background-color: var(--eb-teal);
+    color: #0d1117;
+    width: 100%;
+    margin-top: 18px;
+}
+
+    .btn-teal:hover {
+        background-color: var(--eb-teal-hover);
+        color: #0d1117;
+        transform: translateY(-2px);
+    }
+
+.btn-outline {
+    background: transparent;
+    border: 1px solid var(--eb-teal);
+    color: var(--eb-teal);
+}
+
+    .btn-outline:hover {
+        background: var(--eb-teal);
+        color: #0d1117;
+    }
+
+.key-error {
+    color: #e06c6c;
+    font-size: 0.95rem;
+    margin-top: 12px;
+}
+
+/* ĐÃ THÊM: CSS cho nút Upload khi chưa chọn file (disabled) */
+.btn-gateway:disabled {
+    background-color: var(--eb-border) !important;
+    color: var(--eb-text-dim) !important;
+    cursor: not-allowed !important;
+    transform: none !important;
+}
+
+/* ==========================================
+   2. LIBRARY PAGE
+   ========================================== */
+.library-page {
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 40px 20px;
+}
+
+.library-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 28px;
+}
+
+    .library-header h1 {
+        font-size: 1.8rem;
+        margin: 0;
+    }
+
+.dict-tip-banner {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    background: rgba(0, 201, 167, 0.07);
+    border: 1px solid rgba(0, 201, 167, 0.25);
+    border-radius: 8px;
+    padding: 10px 14px;
+    margin-bottom: 20px;
+    font-size: 0.88rem;
+    color: var(--eb-text-dim);
+}
+
+.dict-tip-icon {
+    flex-shrink: 0;
+    font-size: 1.1rem;
+}
+
+.dict-tip-text {
+    flex: 1;
+}
+
+    .dict-tip-text a {
+        color: var(--eb-teal);
+        text-decoration: underline;
+    }
+
+.dict-tip-dismiss {
+    flex-shrink: 0;
+    background: none;
+    border: none;
+    color: var(--eb-text-dim);
+    font-size: 1.3rem;
+    line-height: 1;
+    cursor: pointer;
+    padding: 0 4px;
+}
+
+    .dict-tip-dismiss:hover {
+        color: var(--eb-text);
+    }
+
+.book-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(230px, 280px));
+    gap: 50px;
+    justify-content: center;
+}
+
+.book-card {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    min-width: 0; /* Ép grid track tôn trọng minmax(230px, 280px) thay vì phình theo
+                     kích thước gốc (intrinsic size) của ảnh cover bên trong - đây là hành vi
+                     mặc định gây lỗi kinh điển của CSS Grid khi item chứa ảnh. */
+}
+
+.book-cover {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 2 / 3;
+    border-radius: 6px;
+    overflow: hidden;
+    background: var(--eb-surface);
+    border: 1px solid var(--eb-border);
+    margin-bottom: 8px;
+    transition: transform 0.18s ease, box-shadow 0.18s ease;
+}
+
+.book-type-badge {
+    position: absolute;
+    top: 8px;
+    right: 8px;
+    padding: 2px 8px;
+    font-size: 0.65rem;
+    font-weight: 600;
+    letter-spacing: 0.03em;
+    text-transform: uppercase;
+    border-radius: 999px;
+    background: rgba(0, 0, 0, 0.55);
+    color: #fff;
+    backdrop-filter: blur(2px);
+}
+
+.upload-dropzone-large.dragover,
+.upload-dropzone.dragover {
+    border-color: #00c9a7;
+    background: rgba(0, 201, 167, 0.08);
+}
+
+.dropzone-text-error {
+    color: #ff6b6b !important;
+}
+
+/* Danh sách file đã chọn (hiển thị giữa dropzone và nút Upload) */
+.upload-file-list {
+    width: 100%;
+    list-style: none;
+    margin: 16px 0 0;
+    padding: 0;
+    max-height: 240px;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.upload-file-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+    background: rgba(0, 0, 0, 0.25);
+    border: 1px solid var(--eb-border);
+    border-radius: 14px;
+    padding: 10px 16px;
+    text-align: left;
+    animation: upload-file-item-in 0.18s ease;
+}
+
+@keyframes upload-file-item-in {
+    from {
+        opacity: 0;
+        transform: translateY(-4px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.upload-file-info {
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    min-width: 0;
+    flex: 1;
+}
+
+.upload-file-name {
+    color: var(--eb-text);
+    font-size: 0.95rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    min-width: 0;
+}
+
+.upload-file-size {
+    flex-shrink: 0;
+    color: var(--eb-text-dim);
+    font-size: 0.8rem;
+}
+
+.upload-file-remove {
+    flex-shrink: 0;
+    width: 26px;
+    height: 26px;
+    border-radius: 50%;
+    border: none;
+    background: rgba(255, 107, 107, 0.12);
+    color: #ff6b6b;
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.15s ease, transform 0.1s ease;
+}
+
+    .upload-file-remove:hover {
+        background: rgba(255, 107, 107, 0.22);
+        transform: scale(1.05);
+    }
+
+.book-card:hover .book-cover {
+    transform: translateY(-4px);
+    box-shadow: 0 8px 20px rgba(0, 0, 0, 0.4);
+}
+
+.book-cover img {
+    width: 100%;
+    height: 100%;
+    max-width: 100%;
+    object-fit: cover;
+    display: block; /* bỏ khoảng trắng ẩn dưới ảnh do baseline align mặc định của inline element */
+}
+
+.book-title {
+    font-size: 0.85rem;
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-bottom: 4px;
+}
+
+/* ==========================================
+   3. READER APP
+   ========================================== */
+.reader-app {
+    display: flex !important;
+    width: 100vw;
+    height: 100vh;
+    overflow: hidden;
+    position: relative;
+}
+
+.sidebar {
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+    height: 100vh;
+    background: var(--eb-surface);
+    border-right: 1px solid var(--eb-border);
+    padding: 24px 18px;
+    overflow-y: auto;
+    font-family: system-ui, -apple-system, sans-serif;
+    flex-shrink: 0 !important;
+    transition: opacity 0.4s ease, transform 0.4s ease; /* Hiệu ứng Focus Mode */
+}
+
+.sidebar-right {
+    border-right: none !important;
+    border-left: 1px solid var(--eb-border) !important;
+}
+
+.sidebar-section {
+    margin-bottom: 22px;
+}
+
+.sidebar-back {
+    color: var(--eb-text-dim);
+    text-decoration: none;
+    font-size: 0.9rem;
+}
+
+.sidebar-toggle {
+    background: none;
+    border: none;
+    color: var(--eb-text-dim);
+    padding: 0;
+    cursor: pointer;
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    font-weight: 600;
+}
+
+.sidebar-panel {
+    list-style: none;
+    padding: 0;
+    margin: 10px 0 0;
+    display: none;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+    .sidebar-panel.open {
+        display: block;
+    }
+
+.chapter-list-wrap {
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+}
+
+    .chapter-list-wrap #panel-chapters {
+        flex: 1;
+        min-width: 0;
+    }
+
+.chapter-scrollbar {
+    width: 4px;
+    background: var(--eb-border);
+    border-radius: 4px;
+    position: relative;
+    flex-shrink: 0;
+    cursor: pointer;
+    display: none; /* JS tự bật khi danh sách dài hơn khung nhìn */
+}
+
+    .chapter-scrollbar.visible {
+        display: block;
+    }
+
+.chapter-scrollbar-thumb {
+    position: absolute;
+    left: 0;
+    top: 0;
+    width: 100%;
+    background: var(--eb-teal);
+    border-radius: 4px;
+    cursor: grab;
+}
+
+    .chapter-scrollbar-thumb:active {
+        cursor: grabbing;
+    }
+
+.sidebar-list-item {
+    padding: 8px 10px;
+    font-size: 0.88rem;
+    border-radius: 6px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+    .sidebar-list-item:hover {
+        background: var(--eb-border);
+    }
+
+    .sidebar-list-item.active {
+        color: var(--eb-teal);
+        font-weight: 600;
+        background: rgba(0, 201, 167, 0.08);
+    }
+
+.bookmark-delete {
+    background: none;
+    border: none;
+    color: #e06c6c;
+    font-size: 1.1rem;
+    cursor: pointer;
+}
+
+.reader-center {
+    flex: 1 !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: center !important;
+    justify-content: flex-start !important;
+    position: relative;
+    padding: 40px 30px 20px;
+    height: 100vh;
+    overflow: hidden;
+    min-width: 0;
+}
+
+.reader-book-title {
+    position: absolute;
+    top: 14px;
+    text-align: center;
+    font-size: 0.85rem;
+    color: var(--eb-text-dim);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 90%;
+    transition: opacity 0.4s ease; /* Hiệu ứng Focus Mode */
+}
+
+/* CONTAINER NỘI DUNG ĐỌC */
+.reader-viewport {
+    width: 100% !important;
+    max-width: 2000px !important;
+    height: calc(100vh - 60px) !important;
+    margin: 0 auto !important;
+    position: relative;
+    overflow-y: auto !important;
+    padding: 10px 30px 40px;
+}
+
+.reader-content-box {
+    line-height: 1.75;
+    font-size: 18px;
+    width: 100%;
+}
+
+    .reader-content-box p {
+        margin-bottom: 1.25em;
+        text-align: justify;
+        word-break: break-word;
+    }
+
+    .reader-content-box h1, .reader-content-box h2, .reader-content-box h3 {
+        text-align: center;
+        margin-bottom: 1em;
+    }
+
+.settings-label {
+    display: block;
+    font-family: system-ui, sans-serif;
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    color: var(--eb-text-dim);
+    margin-bottom: 8px;
+}
+
+.settings-input {
+    background-color: var(--eb-bg) !important;
+    color: var(--eb-text) !important;
+    border-color: var(--eb-border) !important;
+}
+/* ==========================================
+   4. TOP BAR & TRANSLATE TOGGLE (BƯỚC 4 — DualRead)
+   ========================================== */
+.reader-topbar {
+    position: absolute;
+    top: 14px;
+    left: 0;
+    right: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 14px;
+    padding: 0 30px;
+    pointer-events: none;
+}
+
+    .reader-topbar .reader-book-title {
+        position: static;
+        max-width: 60%;
+    }
+
+.translate-toggle-btn {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--eb-bg);
+    border: 1px solid var(--eb-border);
+    color: var(--eb-text);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+    .translate-toggle-btn:hover {
+        border-color: var(--eb-teal);
+        color: var(--eb-teal);
+    }
+
+    .translate-toggle-btn[aria-pressed="true"] {
+        background-color: var(--eb-teal);
+        border-color: var(--eb-teal);
+        color: #0d1117;
+    }
+
+.export-translation-btn {
+    pointer-events: auto;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--eb-bg);
+    border: 1px solid var(--eb-border);
+    color: var(--eb-text);
+    border-radius: 999px;
+    padding: 6px 14px;
+    font-size: 0.8rem;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.18s ease, border-color 0.18s ease, color 0.18s ease;
+}
+
+    .export-translation-btn:hover {
+        border-color: var(--eb-teal);
+        color: var(--eb-teal);
+        text-decoration: none;
+    }
+
+.reader-split {
+    display: flex;
+    align-items: flex-start;
+    gap: 32px;
+    width: 100%;
+}
+
+    .reader-split .reader-content-box {
+        flex: 1;
+        min-width: 0;
+    }
+
+.translation-column {
+    flex: 1;
+    min-width: 0;
+    border-left: 1px solid var(--eb-border);
+    padding-left: 32px;
+}
+
+    .translation-column.full-width {
+        flex: 1 1 100%;
+        border-left: none;
+        padding-left: 0;
+    }
+
+.translation-column-placeholder {
+    color: var(--eb-text-dim);
+    font-size: 0.9rem;
+    padding: 20px 0;
+}
+
+.translation-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: 28px;
+    row-gap: 18px;
+    align-items: start;
+}
+
+.tr-original {
+    padding: 4px 8px;
+    margin: -4px -8px;
+    border-radius: 4px;
+    cursor: pointer;
+    line-height: inherit;
+    transition: background 0.15s ease, box-shadow 0.15s ease;
+}
+
+    .tr-original:hover {
+        background: rgba(255, 255, 255, 0.04);
+    }
+
+    .tr-original.active {
+        background: rgba(0, 201, 167, 0.1);
+        box-shadow: 0 0 0 1px rgba(0, 201, 167, 0.4);
+    }
+
+.tr-textarea {
+    width: 100%;
+    min-height: 40px;
+    resize: none;
+    overflow: hidden;
+    background: var(--eb-surface);
+    border: 1px solid var(--eb-border);
+    border-radius: 6px;
+    padding: 8px 10px;
+    color: var(--eb-text);
+    font-family: inherit;
+    font-size: 0.95rem;
+    line-height: 1.5;
+}
+
+    .tr-textarea:focus {
+        outline: none;
+        border-color: var(--eb-teal);
+        box-shadow: 0 0 0 1px var(--eb-teal);
+    }
+
+/* ==========================================
+   5. FOCUS MODE STYLES (BƯỚC 2)
+   ========================================== */
+.reader-app.focus-mode {
+    cursor: none !important;
+}
+
+    .reader-app.focus-mode .sidebar-left {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(-20px);
+    }
+
+    .reader-app.focus-mode .sidebar-right {
+        opacity: 0;
+        pointer-events: none;
+        transform: translateX(20px);
+    }
+
+    .reader-app.focus-mode .reader-book-title,
+    .reader-app.focus-mode .translate-toggle-btn,
+    .reader-app.focus-mode .export-translation-btn {
+        opacity: 0;
+        pointer-events: none;
+    }
+
+/* On mobile, focus-mode never hides the hamburger/settings buttons - they are
+   the only way to reach the sidebars once the mouse-hover reveal doesn't apply. */
+.reader-app.focus-mode .icon-toggle-btn {
+    opacity: 1;
+    pointer-events: auto;
+}
+
+/* ==========================================
+   6. RESPONSIVE / MOBILE
+   ========================================== */
+
+/* Hamburger / settings buttons that open the sidebars as off-canvas drawers.
+   Hidden on desktop where the sidebars are always docked. */
+.icon-toggle-btn {
+    display: none;
+    pointer-events: auto;
+    align-items: center;
+    justify-content: center;
+    width: 36px;
+    height: 36px;
+    flex-shrink: 0;
+    background: var(--eb-bg);
+    border: 1px solid var(--eb-border);
+    color: var(--eb-text);
+    border-radius: 999px;
+    font-size: 1.05rem;
+    cursor: pointer;
+    transition: border-color 0.18s ease, color 0.18s ease;
+}
+
+    .icon-toggle-btn:hover {
+        border-color: var(--eb-teal);
+        color: var(--eb-teal);
+    }
+
+.sidebar-backdrop {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.55);
+    z-index: 40;
+    opacity: 0;
+    transition: opacity 0.25s ease;
+}
+
+@media (max-width: 900px) {
+    /* --- Reader shell: sidebars become off-canvas drawers --- */
+    .reader-app {
+        width: 100vw;
+        height: 100dvh;
+    }
+
+    .icon-toggle-btn {
+        display: flex;
+    }
+
+    .reader-topbar {
+        padding: 0 12px;
+        top: 10px;
+        gap: 8px;
+    }
+
+        .reader-topbar .reader-book-title {
+            max-width: 34%;
+            font-size: 0.75rem;
+        }
+
+    .export-translation-label {
+        display: none;
+    }
+
+    .export-translation-btn,
+    .translate-toggle-btn {
+        padding: 6px 10px;
+    }
+
+    .reader-center {
+        width: 100%;
+        padding: 56px 16px 16px;
+    }
+
+    .reader-viewport {
+        padding: 10px 4px 30px;
+        height: calc(100dvh - 60px) !important;
+    }
+
+    .sidebar {
+        position: fixed !important;
+        top: 0;
+        bottom: 0;
+        z-index: 50;
+        width: 82vw !important;
+        min-width: 82vw !important;
+        max-width: 340px !important;
+        box-shadow: 0 0 30px rgba(0, 0, 0, 0.45);
+        transition: transform 0.28s ease, opacity 0.28s ease !important;
+    }
+
+    .sidebar-left {
+        left: 0;
+        transform: translateX(-100%);
+    }
+
+    .sidebar-right {
+        right: 0;
+        transform: translateX(100%);
+    }
+
+    /* When focus-mode also applies, the open/closed transform below still wins
+       because it is more specific than the focus-mode translateX rules. */
+    .reader-app .sidebar-left.mobile-open,
+    .reader-app.focus-mode .sidebar-left.mobile-open {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .reader-app .sidebar-right.mobile-open,
+    .reader-app.focus-mode .sidebar-right.mobile-open {
+        transform: translateX(0);
+        opacity: 1;
+        pointer-events: auto;
+    }
+
+    .reader-app.mobile-sidebar-active .sidebar-backdrop {
+        display: block;
+        opacity: 1;
+    }
+
+    /* --- Translation mode: stack original above translation instead of side by side --- */
+    .reader-split {
+        flex-direction: column;
+        gap: 20px;
+    }
+
+    .translation-column {
+        border-left: none;
+        padding-left: 0;
+        padding-top: 20px;
+        border-top: 1px solid var(--eb-border);
+        width: 100%;
+    }
+
+    .translation-grid {
+        grid-template-columns: 1fr;
+        row-gap: 22px;
+    }
+
+    .tr-original {
+        font-weight: 600;
+        color: var(--eb-teal);
+    }
+
+    /* --- Library --- */
+    .library-page {
+        padding: 24px 16px;
+    }
+
+    .library-header {
+        flex-wrap: wrap;
+        gap: 12px;
+    }
+
+    .book-grid {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+        gap: 20px;
+    }
+
+    /* --- Landing / gateway --- */
+    .landing,
+    .landing-gateway {
+        padding: 20px 14px;
+    }
+
+    .gateway-card,
+    .landing-card {
+        border-radius: 32px !important;
+        padding: 32px 22px;
+    }
+
+    .gateway-title,
+    .landing-title {
+        font-size: 1.6rem;
+    }
+
+    .gateway-subtitle,
+    .landing-tagline {
+        font-size: 0.95rem;
+        margin-bottom: 24px;
+    }
+
+    .key-input-group {
+        flex-direction: column;
+    }
+}
+
+@media (max-width: 480px) {
+    .reader-topbar .reader-book-title {
+        display: none;
+    }
+
+    .translate-toggle-btn .translate-toggle-label {
+        display: none;
+    }
+
+    .book-grid {
+        grid-template-columns: repeat(auto-fill, minmax(110px, 1fr));
+        gap: 14px;
+    }
+
+    .gateway-card,
+    .landing-card {
+        padding: 26px 16px;
+        border-radius: 24px !important;
+    }
+
+    .sidebar {
+        width: 88vw !important;
+        min-width: 88vw !important;
+    }
+}
+
+@media (hover: none) and (pointer: coarse) {
+    /* Touch devices: mouse-based focus mode still applies (JS also listens for
+       touchstart), but make tap targets a bit more forgiving. */
+    .sidebar-list-item {
+        padding: 10px 10px;
+    }
+
+    .bookmark-delete {
+        font-size: 1.3rem;
+        padding: 4px;
+    }
+}

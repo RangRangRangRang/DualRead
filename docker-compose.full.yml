@@ -1,0 +1,41 @@
+version: "3.9"
+
+# Runs the whole app inside Docker too (no local .NET SDK or PostgreSQL install needed at all).
+# For day-to-day development with `dotnet run`/hot reload on the host, use docker-compose.yml
+# (db only) instead - rebuilding this image on every code change is slow.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dualread-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dualread
+    volumes:
+      - dualread-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d dualread"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  web:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: dualread-web
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      ConnectionStrings__DefaultConnection: "Host=postgres;Port=5432;Database=dualread;Username=postgres;Password=postgres"
+    ports:
+      - "8080:8080"
+    volumes:
+      - dualread-uploads:/app/Uploads
+
+volumes:
+  dualread-pgdata:
+  dualread-uploads:

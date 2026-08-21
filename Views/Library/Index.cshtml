@@ -1,0 +1,124 @@
+@model List<Book>
+@{
+    ViewData["Title"] = "Library";
+}
+
+<div class="library-page">
+    <div class="library-header">
+        <h1>Library</h1>
+        <div class="d-flex align-items-center gap-3">
+            <button type="button" class="recovery-badge recovery-badge-btn" title="Click to copy your recovery key"
+                    data-copy-key="@ViewBag.RecoveryKeyCode">
+                <span class="recovery-badge-text">@ViewBag.RecoveryKeyCode</span>
+            </button>
+            <a class="btn btn-light" asp-controller="Library" asp-action="Upload">+ Upload</a>
+        </div>
+    </div>
+
+    @if (TempData["JustCreatedKey"] is string newKey && !string.IsNullOrEmpty(newKey))
+    {
+        <div class="alert alert-warning d-flex align-items-center justify-content-between gap-3">
+            <span>Save this recovery key somewhere safe - it's the only way back into your library: <strong>@newKey</strong></span>
+            <button type="button" class="btn btn-sm btn-outline-dark flex-shrink-0" data-copy-key="@newKey">Copy</button>
+        </div>
+    }
+
+    @if (TempData["UploadSuccessCount"] is int successCount && successCount > 0)
+    {
+        <div class="alert alert-success">
+            <strong>Uploaded @successCount file(s) successfully:</strong>
+            @if (TempData["UploadSuccessFiles"] is string successFilesRaw && !string.IsNullOrEmpty(successFilesRaw))
+            {
+                <ul class="mb-0">
+                    @foreach (var line in successFilesRaw.Split('|', StringSplitOptions.RemoveEmptyEntries))
+                    {
+                        <li>@line</li>
+                    }
+                </ul>
+            }
+        </div>
+    }
+
+    @if (TempData["UploadErrors"] is string uploadErrorsRaw && !string.IsNullOrEmpty(uploadErrorsRaw))
+    {
+        <div class="alert alert-danger">
+            <strong>Some files failed to upload:</strong>
+            <ul class="mb-0">
+                @foreach (var line in uploadErrorsRaw.Split('|', StringSplitOptions.RemoveEmptyEntries))
+                {
+                    <li>@line</li>
+                }
+            </ul>
+        </div>
+    }
+
+    <div id="dict-tip-banner" class="dict-tip-banner" hidden>
+        <span class="dict-tip-icon">🌐</span>
+        <span class="dict-tip-text">
+            Thêm tiện ích dịch ở đây-> <a href="https://chromewebstore.google.com/detail/google-translate/aapbdbdomjkkjkaonfhkkikfgjllcleb" target="_blank" rel="noopener noreferrer">Google Translate</a> cho trình duyệt, bôi đen chữ là dịch ngay.
+        </span>
+        <button type="button" id="dict-tip-dismiss" class="dict-tip-dismiss" aria-label="Dismiss">&times;</button>
+    </div>
+
+    @if (Model.Count == 0)
+    {
+        <p class="text-secondary">No books yet. Upload your first EPUB to get started.</p>
+    }
+    else
+    {
+        <div class="book-grid">
+            @foreach (var book in Model)
+            {
+                <div class="book-card">
+                    <a class="book-cover-link" asp-controller="Reader" asp-action="Index" asp-route-id="@book.Id">
+                        <div class="book-cover">
+                            @if (!string.IsNullOrEmpty(book.CoverImagePath))
+                            {
+                                <img src="/library-assets/@book.RecoveryKeyId/@book.Id/@System.IO.Path.GetFileName(book.CoverImagePath)" alt="@book.Title" />
+                            }
+                            else
+                            {
+                                <div class="book-cover-placeholder"></div>
+                            }
+                        </div>
+                        <div class="book-title" title="@book.Title">@book.Title</div>
+                    </a>
+                    <form asp-controller="Library" asp-action="Delete" method="post" onsubmit="return confirm('Delete this book?');">
+                        <input type="hidden" name="id" value="@book.Id" />
+                        <button type="submit" class="btn btn-sm btn-outline-danger book-delete-btn">Delete</button>
+                    </form>
+                </div>
+            }
+        </div>
+    }
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            document.querySelectorAll('[data-copy-key]').forEach(function(btn) {
+                btn.addEventListener('click', function() {
+                    var key = btn.getAttribute('data-copy-key');
+                    var restore = btn.textContent;
+                    navigator.clipboard.writeText(key).then(function() {
+                        btn.textContent = 'Copied!';
+                        setTimeout(function() { btn.textContent = restore; }, 1500);
+                    }).catch(function() { /* clipboard unavailable - key is still visible */ });
+                });
+            });
+
+            var DICT_TIP_KEY = 'dualread_dict_tip_dismissed';
+            var banner = document.getElementById('dict-tip-banner');
+            var dismissBtn = document.getElementById('dict-tip-dismiss');
+            if (banner && !localStorage.getItem(DICT_TIP_KEY)) {
+                banner.hidden = false;
+            }
+            if (dismissBtn) {
+                dismissBtn.addEventListener('click', function() {
+                    localStorage.setItem(DICT_TIP_KEY, '1');
+                    banner.hidden = true;
+                });
+            }
+        });
+    </script>
+}

@@ -1,0 +1,27 @@
+version: "3.9"
+
+# Local dev database only. Run `dotnet run` on the host as usual (matching the connection
+# string in appsettings.Development.json), and point it at this container instead of a
+# locally-installed PostgreSQL. For a fully containerized app + db stack (closer to the free-tier
+# deployment target), see docker-compose.full.yml instead.
+services:
+  postgres:
+    image: postgres:16-alpine
+    container_name: dualread-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: dualread
+    ports:
+      - "5432:5432"
+    volumes:
+      - dualread-pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U postgres -d dualread"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+volumes:
+  dualread-pgdata:
