@@ -21,6 +21,11 @@ VOLUME ["/app/Uploads"]
 COPY --from=build /app/publish .
 
 ENV ASPNETCORE_URLS=http://+:8080
+# Server GC assumes generous, per-core memory and can over-allocate heap on tiny free-tier
+# containers (Render free = 512MB), crashing the runtime with SIGSEGV (exit 139) before any
+# application code even runs. Workstation GC is far more conservative and appropriate here.
+ENV DOTNET_gcServer=0
+ENV DOTNET_GCHeapHardLimit=0x14000000
 EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "DualRead.dll"]
