@@ -352,12 +352,188 @@ html, body, .reader-viewport, .sidebar, .sidebar-panel {
         color: var(--eb-text);
     }
 
+.library-toolbar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 24px;
+}
+
+.library-search-box {
+    position: relative;
+    flex: 1 1 260px;
+    max-width: 360px;
+    display: flex;
+    align-items: center;
+}
+
+.library-search-icon {
+    position: absolute;
+    left: 12px;
+    color: var(--eb-text-dim);
+    pointer-events: none;
+}
+
+.library-search-input {
+    width: 100%;
+    padding: 9px 34px 9px 34px;
+    border-radius: 10px;
+    border: 1px solid var(--eb-border);
+    background: var(--eb-surface);
+    color: var(--eb-text);
+    font-size: 0.9rem;
+    font-family: system-ui, -apple-system, sans-serif;
+}
+
+    .library-search-input:focus {
+        outline: none;
+        border-color: var(--eb-teal);
+    }
+
+    .library-search-input::placeholder {
+        color: var(--eb-text-dim);
+    }
+
+.library-search-clear {
+    position: absolute;
+    right: 8px;
+    width: 22px;
+    height: 22px;
+    border: none;
+    border-radius: 50%;
+    background: transparent;
+    color: var(--eb-text-dim);
+    font-size: 1.1rem;
+    line-height: 1;
+    cursor: pointer;
+}
+
+    .library-search-clear:hover {
+        color: var(--eb-text);
+        background: rgba(128, 128, 128, 0.15);
+    }
+
+.library-toolbar-actions {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-shrink: 0;
+}
+
+.library-sort-select {
+    padding: 8px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--eb-border);
+    background: var(--eb-surface);
+    color: var(--eb-text);
+    font-size: 0.85rem;
+    font-family: system-ui, -apple-system, sans-serif;
+    cursor: pointer;
+}
+
+    .library-sort-select:focus {
+        outline: none;
+        border-color: var(--eb-teal);
+    }
+
+.library-view-toggle {
+    display: flex;
+    border: 1px solid var(--eb-border);
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.library-view-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: none;
+    background: var(--eb-surface);
+    color: var(--eb-text-dim);
+    cursor: pointer;
+    transition: background-color 0.15s ease, color 0.15s ease;
+}
+
+    .library-view-btn + .library-view-btn {
+        border-left: 1px solid var(--eb-border);
+    }
+
+    .library-view-btn:hover {
+        color: var(--eb-text);
+    }
+
+    .library-view-btn.active {
+        background: var(--eb-teal);
+        color: #0d1f1c;
+    }
+
 .book-grid {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(230px, 280px));
     gap: 50px;
     justify-content: center;
 }
+
+.book-author {
+    font-size: 0.75rem;
+    color: var(--eb-text-dim);
+    width: 100%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+/* List view: rows instead of a card grid. Toggled via JS by adding this class to #library-book-grid. */
+.book-grid-list {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+    .book-grid-list .book-card {
+        flex-direction: row;
+        align-items: center;
+        text-align: left;
+        gap: 14px;
+        padding: 8px 12px;
+        border-radius: 10px;
+        border: 1px solid var(--eb-border);
+        background: var(--eb-surface);
+    }
+
+    .book-grid-list .book-cover-link {
+        display: flex;
+        align-items: center;
+        gap: 14px;
+        width: auto;
+        flex: 1;
+        min-width: 0;
+    }
+
+    .book-grid-list .book-cover {
+        width: 42px;
+        flex-shrink: 0;
+        margin-bottom: 0;
+    }
+
+    .book-grid-list .book-title,
+    .book-grid-list .book-author {
+        width: auto;
+        white-space: normal;
+    }
+
+    .book-grid-list .book-title {
+        font-size: 0.95rem;
+        margin-bottom: 2px;
+    }
+
+    .book-grid-list .book-delete-btn {
+        flex-shrink: 0;
+    }
 
 .book-card {
     display: flex;
@@ -1125,8 +1301,6 @@ html, body, .reader-viewport, .sidebar, .sidebar-panel {
 }
 
 @media (hover: none) and (pointer: coarse) {
-    /* Touch devices: mouse-based focus mode still applies (JS also listens for
-       touchstart), but make tap targets a bit more forgiving. */
     .sidebar-list-item {
         padding: 10px 10px;
     }
@@ -1135,4 +1309,30 @@ html, body, .reader-viewport, .sidebar, .sidebar-panel {
         font-size: 1.3rem;
         padding: 4px;
     }
+
+    .chapter-scrollbar {
+        position: relative;
+    }
+
+        .chapter-scrollbar::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -4px;
+            right: -20px;
+        }
+
+    .chapter-scrollbar-thumb {
+        position: relative;
+    }
+
+        .chapter-scrollbar-thumb::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            left: -4px;
+            right: -20px;
+        }
 }

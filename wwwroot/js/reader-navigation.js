@@ -18,6 +18,14 @@ export function initNavigation(ctx) {
         ctx.chapterScrollbarThumb.style.top = `${scrollRatio * maxThumbTop}px`;
     }
 
+    // Lấy toạ độ Y từ cả sự kiện chuột (MouseEvent) lẫn cảm ứng (TouchEvent), vì trên điện
+    // thoại không có "clientY" trực tiếp trên event - nó nằm trong e.touches[0]/e.changedTouches[0].
+    function getPointerY(e) {
+        if (e.touches && e.touches.length > 0) return e.touches[0].clientY;
+        if (e.changedTouches && e.changedTouches.length > 0) return e.changedTouches[0].clientY;
+        return e.clientY;
+    }
+
     function setupChapterScrollbar() {
         if (!ctx.panelChapters || !ctx.chapterScrollbar || !ctx.chapterScrollbarThumb) return;
         ctx.panelChapters.addEventListener('scroll', updateChapterScrollbar);
@@ -26,31 +34,48 @@ export function initNavigation(ctx) {
         let dragStartY = 0;
         let dragStartScrollTop = 0;
 
-        ctx.chapterScrollbarThumb.addEventListener('mousedown', (e) => {
+        function startDrag(e) {
             e.preventDefault();
             dragging = true;
-            dragStartY = e.clientY;
+            dragStartY = getPointerY(e);
             dragStartScrollTop = ctx.panelChapters.scrollTop;
-        });
-        ctx.chapterScrollbar.addEventListener('mousedown', (e) => {
+        }
+
+        function jumpToTrackPosition(e) {
             if (e.target === ctx.chapterScrollbarThumb) return;
             const rect = ctx.chapterScrollbar.getBoundingClientRect();
-            const clickRatio = (e.clientY - rect.top) / rect.height;
+            const clickRatio = (getPointerY(e) - rect.top) / rect.height;
             const { scrollHeight, clientHeight } = ctx.panelChapters;
             ctx.panelChapters.scrollTop = clickRatio * (scrollHeight - clientHeight);
-        });
-        document.addEventListener('mousemove', (e) => {
+        }
+
+        function onDragMove(e) {
             if (!dragging) return;
             const { scrollHeight, clientHeight } = ctx.panelChapters;
             const trackHeight = ctx.chapterScrollbar.clientHeight;
             const thumbHeight = ctx.chapterScrollbarThumb.offsetHeight;
             const maxThumbTop = trackHeight - thumbHeight;
             const scrollableHeight = scrollHeight - clientHeight;
-            const deltaY = e.clientY - dragStartY;
+            const deltaY = getPointerY(e) - dragStartY;
             const deltaScroll = maxThumbTop > 0 ? (deltaY / maxThumbTop) * scrollableHeight : 0;
             ctx.panelChapters.scrollTop = Math.min(scrollableHeight, Math.max(0, dragStartScrollTop + deltaScroll));
-        });
-        document.addEventListener('mouseup', () => { dragging = false; });
+        }
+
+        function endDrag() { dragging = false; }
+
+        // Chuột (desktop)
+        ctx.chapterScrollbarThumb.addEventListener('mousedown', startDrag);
+        ctx.chapterScrollbar.addEventListener('mousedown', jumpToTrackPosition);
+        document.addEventListener('mousemove', onDragMove);
+        document.addEventListener('mouseup', endDrag);
+
+        // Cảm ứng (điện thoại/tablet) - passive: false vì cần preventDefault để tránh cuộn
+        // cả trang khi đang kéo thanh scrollbar.
+        ctx.chapterScrollbarThumb.addEventListener('touchstart', startDrag, { passive: false });
+        ctx.chapterScrollbar.addEventListener('touchstart', jumpToTrackPosition, { passive: false });
+        document.addEventListener('touchmove', onDragMove, { passive: false });
+        document.addEventListener('touchend', endDrag);
+        document.addEventListener('touchcancel', endDrag);
     }
 
     function renderNavList() {
