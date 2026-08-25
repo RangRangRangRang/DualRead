@@ -3,6 +3,7 @@ using DualRead.Repositories;
 using DualRead.Repositories.Interfaces;
 using DualRead.Services;
 using DualRead.Services.Interfaces;
+using Microsoft.AspNetCore.DataProtection;
 using Microsoft.AspNetCore.HttpOverrides;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.FileProviders;
@@ -33,6 +34,16 @@ if (!string.IsNullOrWhiteSpace(port))
 // MVC
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
+
+// Point Data Protection at a fixed on-disk folder and a stable application name. Without this,
+// ASP.NET Core re-probes for a key ring location on repeated access, which on Linux containers
+// creates a new FileSystemWatcher each time - quickly exhausting the container's inotify
+// instance cap (128) and crashing every subsequent request, including the error page itself.
+var dataProtectionKeysPath = Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys");
+Directory.CreateDirectory(dataProtectionKeysPath);
+builder.Services.AddDataProtection()
+    .SetApplicationName("DualRead")
+    .PersistKeysToFileSystem(new DirectoryInfo(dataProtectionKeysPath));
 
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {

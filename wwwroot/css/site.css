@@ -371,6 +371,23 @@ html, body, .reader-viewport, .sidebar, .sidebar-panel {
                      mặc định gây lỗi kinh điển của CSS Grid khi item chứa ảnh. */
 }
 
+/* <a> mặc định là inline, không có width. Bên trong .book-card có align-items: center
+   (co theo nội dung theo trục ngang), nên nếu không ép block + width:100% ở đây, mỗi card
+   sẽ tự co giãn theo kích thước gốc của ảnh cover riêng nó thay vì theo track của grid -
+   gây ra card méo/phình to bất thường khi ảnh cover có tỉ lệ khác biệt (bug đã gặp trên mobile). */
+.book-cover-link {
+    display: block;
+    width: 100%;
+    text-decoration: none;
+    color: inherit;
+}
+
+.book-cover-placeholder {
+    width: 100%;
+    height: 100%;
+    background: #000;
+}
+
 .book-cover {
     position: relative;
     width: 100%;
@@ -885,12 +902,12 @@ html, body, .reader-viewport, .sidebar, .sidebar-panel {
         pointer-events: none;
     }
 
-/* On mobile, focus-mode never hides the hamburger/settings buttons - they are
+    /* On mobile, focus-mode never hides the hamburger/settings buttons - they are
    the only way to reach the sidebars once the mouse-hover reveal doesn't apply. */
-.reader-app.focus-mode .icon-toggle-btn {
-    opacity: 1;
-    pointer-events: auto;
-}
+    .reader-app.focus-mode .icon-toggle-btn {
+        opacity: 1;
+        pointer-events: auto;
+    }
 
 /* ==========================================
    6. RESPONSIVE / MOBILE

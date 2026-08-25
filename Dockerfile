@@ -26,6 +26,11 @@ ENV ASPNETCORE_URLS=http://+:8080
 # application code even runs. Workstation GC is far more conservative and appropriate here.
 ENV DOTNET_gcServer=0
 ENV DOTNET_GCHeapHardLimit=0x14000000
+# The container's kernel enforces a low inotify instance cap (128). Something in the app
+# (Data Protection key-ring discovery is the usual suspect when keys aren't persisted across
+# restarts) creates a new FileSystemWatcher per request, exhausting that cap and crashing every
+# subsequent request - even the error page. Force polling-based file change detection instead.
+ENV DOTNET_USE_POLLING_FILE_WATCHER=true
 EXPOSE 8080
 
 ENTRYPOINT ["dotnet", "DualRead.dll"]
