@@ -39,6 +39,7 @@ document.addEventListener('DOMContentLoaded', () => {
     ctx.api.setupEventListeners();
     ctx.api.setupTranslateToggle();
     ctx.api.setupChapterScrollbar();
+    ctx.api.setupChapterNavButtons();
     ctx.api.setupFocusMode();
     ctx.api.setupInternalLinkInterception();
     ctx.api.setupMobileSidebars();

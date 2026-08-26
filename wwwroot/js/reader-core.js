@@ -22,6 +22,8 @@ export function createReaderContext() {
         bookTitleEl: get('reader-book-title'),
         panelChapters: get('panel-chapters'),
         panelBookmarks: get('panel-bookmarks'),
+        prevChapterBtn: get('prev-chapter-btn'),
+        nextChapterBtn: get('next-chapter-btn'),
         chapterScrollbar: get('chapter-scrollbar'),
         chapterScrollbarThumb: get('chapter-scrollbar-thumb'),
         settingFontSize: get('setting-font-size'),
@@ -66,7 +68,9 @@ export const translations = {
         letterSpacing: 'Letter Spacing',
         noContent: 'This chapter has no content.',
         translateToggle: 'Translate this page',
-        exportTranslation: 'Export translation (.docx)'
+        exportTranslation: 'Export translation (.docx)',
+        previousChapter: 'Previous',
+        nextChapter: 'Next'
     },
     vi: {
         backToLibrary: '← Thư viện',
@@ -83,6 +87,8 @@ export const translations = {
         letterSpacing: 'Khoảng cách chữ',
         noContent: 'Chương này không có nội dung.',
         translateToggle: 'Dịch trang này',
-        exportTranslation: 'Xuất bản dịch (.docx)'
+        exportTranslation: 'Xuất bản dịch (.docx)',
+        previousChapter: 'Trước',
+        nextChapter: 'Sau'
     }
 };

@@ -78,6 +78,17 @@ export function initNavigation(ctx) {
         document.addEventListener('touchcancel', endDrag);
     }
 
+    function updateChapterNavButtons() {
+        if (ctx.prevChapterBtn) ctx.prevChapterBtn.disabled = ctx.currentChapterIndex <= 0;
+        if (ctx.nextChapterBtn) ctx.nextChapterBtn.disabled = ctx.currentChapterIndex >= ctx.chapters.length - 1;
+    }
+
+    function setupChapterNavButtons() {
+        ctx.prevChapterBtn?.addEventListener('click', () => loadChapter(ctx.currentChapterIndex - 1));
+        ctx.nextChapterBtn?.addEventListener('click', () => loadChapter(ctx.currentChapterIndex + 1));
+        updateChapterNavButtons();
+    }
+
     function renderNavList() {
         if (!ctx.panelChapters) return;
         ctx.panelChapters.innerHTML = '';
@@ -268,10 +279,12 @@ export function initNavigation(ctx) {
             const items = ctx.panelChapters.querySelectorAll('.sidebar-list-item');
             items.forEach((item, i) => item.classList.toggle('active', i === index));
         }
+        updateChapterNavButtons();
     }
 
     ctx.api.updateChapterScrollbar = updateChapterScrollbar;
     ctx.api.setupChapterScrollbar = setupChapterScrollbar;
+    ctx.api.setupChapterNavButtons = setupChapterNavButtons;
     ctx.api.renderNavList = renderNavList;
     ctx.api.renderBookmarksList = renderBookmarksList;
     ctx.api.addCurrentBookmark = addCurrentBookmark;

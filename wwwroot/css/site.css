@@ -770,6 +770,39 @@ html, body, .reader-viewport, .sidebar, .sidebar-panel {
         display: block;
     }
 
+.chapter-nav-buttons {
+    display: flex;
+    gap: 8px;
+    margin: 10px 0 12px;
+}
+
+.chapter-nav-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 7px 8px;
+    border-radius: 8px;
+    border: 1px solid var(--eb-border);
+    background: transparent;
+    color: var(--eb-text);
+    font-size: 0.78rem;
+    font-family: system-ui, -apple-system, sans-serif;
+    cursor: pointer;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+    .chapter-nav-btn:hover:not(:disabled) {
+        background: var(--eb-border);
+        border-color: var(--eb-teal);
+    }
+
+    .chapter-nav-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+    }
+
 .chapter-list-wrap {
     display: flex;
     align-items: stretch;
@@ -1301,6 +1334,8 @@ html, body, .reader-viewport, .sidebar, .sidebar-panel {
 }
 
 @media (hover: none) and (pointer: coarse) {
+    /* Touch devices: mouse-based focus mode still applies (JS also listens for
+       touchstart), but make tap targets a bit more forgiving. */
     .sidebar-list-item {
         padding: 10px 10px;
     }
@@ -1310,6 +1345,12 @@ html, body, .reader-viewport, .sidebar, .sidebar-panel {
         padding: 4px;
     }
 
+    /* The chapter scrollbar track/thumb are only 4px wide - fine for a mouse cursor but far
+       too thin to reliably hit with a finger. Widen the actual hit area via ::before instead
+       of changing the 4px visual width, so the thin teal bar still looks the same but is much
+       easier to grab and drag on a phone. Biased mostly to the RIGHT (into the sidebar's own
+       empty padding, see `.sidebar { padding: 24px 18px }`) rather than centered, so it doesn't
+       eat into the chapter list's clickable area on the left. */
     .chapter-scrollbar {
         position: relative;
     }
@@ -1324,6 +1365,9 @@ html, body, .reader-viewport, .sidebar, .sidebar-panel {
         }
 
     .chapter-scrollbar-thumb {
+        /* Thumb keeps its 4px visual width (inherited from .chapter-scrollbar), but its
+               own hit area is widened the same way so dragging it specifically (not just the
+               track around it) is also easy to grab. */
         position: relative;
     }
 

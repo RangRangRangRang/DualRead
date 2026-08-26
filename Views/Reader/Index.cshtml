@@ -22,6 +22,14 @@
 
         <div class="sidebar-section">
             <button type="button" class="sidebar-toggle" data-i18n="chapters" data-panel="panel-chapters">Chapters</button>
+            <div class="chapter-nav-buttons">
+                <button type="button" id="prev-chapter-btn" class="chapter-nav-btn" data-i18n-aria="previousChapter" aria-label="Previous chapter" title="Previous chapter">
+                    <span aria-hidden="true">&#8249;</span> <span data-i18n="previousChapter">Previous</span>
+                </button>
+                <button type="button" id="next-chapter-btn" class="chapter-nav-btn" data-i18n-aria="nextChapter" aria-label="Next chapter" title="Next chapter">
+                    <span data-i18n="nextChapter">Next</span> <span aria-hidden="true">&#8250;</span>
+                </button>
+            </div>
             <div class="chapter-list-wrap">
                 <ul id="panel-chapters" class="sidebar-panel sidebar-list open"></ul>
                 <div class="chapter-scrollbar" id="chapter-scrollbar">
