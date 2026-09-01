@@ -1,5 +1,4 @@
 using System.Collections.Concurrent;
-using System.Net;
 using System.Text;
 using System.Text.RegularExpressions;
 using DualRead.Services.Interfaces;
@@ -7,20 +6,13 @@ using DualRead.ViewModels;
 using PDFtoImage;
 using SkiaSharp;
 using UglyToad.PdfPig;
-using UglyToad.PdfPig.Content;
-using UglyToad.PdfPig.DocumentLayoutAnalysis.TextExtractor;
 
 namespace DualRead.Services;
 
 public class PdfParsingService : IPdfParsingService
 {
-    // A page is treated as "scanned / image-only" (no usable text layer) when the amount of
-    // non-whitespace text extracted from it falls below this. Real book pages almost always
-    // clear this easily; scanned pages come back empty or with a handful of OCR-noise characters.
-    private const int MinMeaningfulTextChars = 15;
-
-    // DPI used when rasterizing a scanned page to PNG. High enough to stay legible when zoomed,
-    // low enough to keep per-page file size and render time reasonable for a free-tier host.
+    // DPI used when rasterizing a PDF page to PNG.
+    // 150 DPI provides sharp, crystal-clear readability while keeping memory and file size fast and efficient.
     private const int RenderDpi = 150;
 
     private static readonly ConcurrentDictionary<string, SemaphoreSlim> RenderLocks = new(StringComparer.OrdinalIgnoreCase);
@@ -85,9 +77,14 @@ public class PdfParsingService : IPdfParsingService
 
         for (var pageNum = 1; pageNum <= totalPages; pageNum++)
         {
-            var page = document.GetPage(pageNum);
-            var pageHtml = ConvertPageToHtml(page, pageNum, totalPages);
-            sb.AppendLine(pageHtml);
+            var fileName = $"pdfpage-{pageNum:D6}.png";
+            sb.AppendLine($"<div id=\"pdf-page-{pageNum}\" class=\"pdf-page-wrapper\" data-page-number=\"{pageNum}\">");
+            if (totalPages > 1)
+            {
+                sb.AppendLine($"<div class=\"pdf-page-marker\"><small class=\"text-dim\">— Trang {pageNum} / {totalPages} —</small></div>");
+            }
+            sb.AppendLine($"<div class=\"pdf-image-container\"><img class=\"pdf-page-image\" src=\"{fileName}\" alt=\"Page {pageNum}\" loading=\"lazy\" /></div>");
+            sb.AppendLine("</div>");
         }
 
         return Task.FromResult(sb.ToString());
@@ -122,55 +119,8 @@ public class PdfParsingService : IPdfParsingService
 
     private static string BuildRenderedPageRelativePath(Guid recoveryKeyId, Guid bookId, string src)
     {
-        // src comes back as e.g. "pdfpage-000042.png" - keep it a plain filename, never a path,
-        // so this can never be used to escape the book's own pages/ folder.
         var safeFileName = Path.GetFileName(src);
         return Path.Combine(recoveryKeyId.ToString(), bookId.ToString(), "pages", safeFileName);
-    }
-
-    private static string ConvertPageToHtml(Page page, int pageNum, int totalPages)
-    {
-        var sb = new StringBuilder();
-
-        string? text = null;
-        try
-        {
-            text = ContentOrderTextExtractor.GetText(page);
-            if (string.IsNullOrWhiteSpace(text))
-            {
-                text = page.Text;
-            }
-        }
-        catch
-        {
-            text = null;
-        }
-
-        var meaningfulCharCount = text is null ? 0 : text.Count(c => !char.IsWhiteSpace(c));
-
-        if (totalPages > 1)
-        {
-            sb.AppendLine($"<div class=\"pdf-page-marker\"><small class=\"text-dim\">— Page {pageNum} of {totalPages} —</small></div>");
-        }
-
-        if (meaningfulCharCount >= MinMeaningfulTextChars)
-        {
-            var paragraphs = SplitIntoParagraphs(text!);
-            foreach (var paragraph in paragraphs)
-            {
-                if (string.IsNullOrWhiteSpace(paragraph)) continue;
-                var encoded = WebUtility.HtmlEncode(paragraph);
-                sb.AppendLine($"<p>{encoded}</p>");
-            }
-        }
-        else
-        {
-            // No usable text layer on this page (typically a scanned book page) - render on demand
-            var fileName = $"pdfpage-{pageNum:D6}.png";
-            sb.AppendLine($"<div class=\"pdf-image-container\"><img class=\"pdf-page-image\" src=\"{fileName}\" alt=\"Page {pageNum}\" loading=\"lazy\" /></div>");
-        }
-
-        return sb.ToString();
     }
 
     private async Task<string> EnsureRenderedPageAsync(string absolutePdfFilePath, int pageNum, Guid recoveryKeyId, Guid bookId)
@@ -243,11 +193,9 @@ public class PdfParsingService : IPdfParsingService
                 }
             }
 
-            // No embedded image on page 1 (common for scanned-but-vectorized or text-image-hybrid
-            // PDFs where the whole page is one full-page image PdfPig doesn't enumerate the same
-            // way) - fall back to rasterizing page 1 itself as the cover.
+            // Fall back to rendering page 1 as cover
             using var pdfStream = File.OpenRead(absolutePdfFilePath);
-            using var bitmap = Conversion.ToImage(pdfStream, page: new Index(0), options: new RenderOptions(Dpi: 96));
+            using var bitmap = Conversion.ToImage(pdfStream, page: new Index(0), options: new RenderOptions(Dpi: 120));
             using var image = SKImage.FromBitmap(bitmap);
             using var pngData = image.Encode(SKEncodedImageFormat.Png, 100);
             return (pngData.ToArray(), ".png");
@@ -256,57 +204,6 @@ public class PdfParsingService : IPdfParsingService
         {
             return (null, null);
         }
-    }
-
-    private static List<string> SplitIntoParagraphs(string rawText)
-    {
-        var result = new List<string>();
-        if (string.IsNullOrWhiteSpace(rawText)) return result;
-
-        var rawLines = rawText.Split(new[] { "\r\n", "\r", "\n" }, StringSplitOptions.None)
-                              .Select(l => l.Trim())
-                              .ToList();
-
-        var currentParagraph = new StringBuilder();
-
-        foreach (var line in rawLines)
-        {
-            if (string.IsNullOrWhiteSpace(line))
-            {
-                if (currentParagraph.Length > 0)
-                {
-                    result.Add(currentParagraph.ToString().Trim());
-                    currentParagraph.Clear();
-                }
-                continue;
-            }
-
-            if (currentParagraph.Length > 0)
-            {
-                var prevText = currentParagraph.ToString();
-                if (prevText.EndsWith("-"))
-                {
-                    currentParagraph.Length--;
-                    currentParagraph.Append(line);
-                }
-                else
-                {
-                    currentParagraph.Append(' ');
-                    currentParagraph.Append(line);
-                }
-            }
-            else
-            {
-                currentParagraph.Append(line);
-            }
-        }
-
-        if (currentParagraph.Length > 0)
-        {
-            result.Add(currentParagraph.ToString().Trim());
-        }
-
-        return result;
     }
 
     private static string DetectImageExtension(byte[] bytes)

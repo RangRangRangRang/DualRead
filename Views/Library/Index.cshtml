@@ -110,35 +110,68 @@
 
         <p id="library-no-results" class="text-secondary" hidden>No books match your search.</p>
 
-        <div id="library-book-grid" class="book-grid">
-            @foreach (var book in Model)
+        <div id="library-sections-container" class="library-sections-container">
+            @{
+                var formatGroups = Model
+                    .GroupBy(b => b.Type)
+                    .OrderBy(g => (int)g.Key)
+                    .ToList();
+            }
+
+            @foreach (var group in formatGroups)
             {
-                <div class="book-card"
-                     data-title="@book.Title.ToLowerInvariant()"
-                     data-author="@((book.Author ?? "").ToLowerInvariant())"
-                     data-uploaded="@book.UploadedAtUtc.Ticks">
-                    <a class="book-cover-link" asp-controller="Reader" asp-action="Index" asp-route-id="@book.Id">
-                        <div class="book-cover">
-                            @if (!string.IsNullOrEmpty(book.CoverImagePath))
-                            {
-                                <img src="/library-assets/@book.RecoveryKeyId/@book.Id/@System.IO.Path.GetFileName(book.CoverImagePath)" alt="@book.Title" />
-                            }
-                            else
-                            {
-                                <div class="book-cover-placeholder"></div>
-                            }
+                var formatName = group.Key switch
+                {
+                    BookType.Epub => "EPUB Books",
+                    BookType.Pdf => "PDF Documents",
+                    BookType.Docx => "Word Documents (.docx)",
+                    _ => group.Key.ToString()
+                };
+                var formatCode = group.Key.ToString().ToLowerInvariant();
+
+                <section class="library-format-section" data-format="@formatCode">
+                    <div class="library-format-header">
+                        <div class="library-format-title-group">
+                            <span class="format-badge format-badge-@formatCode">@group.Key.ToString().ToUpperInvariant()</span>
+                            <h2 class="library-format-heading">@formatName</h2>
+                            <span class="library-format-count">(@group.Count())</span>
                         </div>
-                        <div class="book-title" title="@book.Title">@book.Title</div>
-                        @if (!string.IsNullOrEmpty(book.Author))
+                        <div class="library-format-line"></div>
+                    </div>
+
+                    <div class="book-grid">
+                        @foreach (var book in group)
                         {
-                            <div class="book-author">@book.Author</div>
+                            <div class="book-card"
+                                 data-title="@book.Title.ToLowerInvariant()"
+                                 data-author="@((book.Author ?? "").ToLowerInvariant())"
+                                 data-uploaded="@book.UploadedAtUtc.Ticks">
+                                <a class="book-cover-link" asp-controller="Reader" asp-action="Index" asp-route-id="@book.Id">
+                                    <div class="book-cover">
+                                        @if (!string.IsNullOrEmpty(book.CoverImagePath))
+                                        {
+                                            <img src="/library-assets/@book.RecoveryKeyId/@book.Id/@System.IO.Path.GetFileName(book.CoverImagePath)" alt="@book.Title" />
+                                        }
+                                        else
+                                        {
+                                            <div class="book-cover-placeholder"></div>
+                                        }
+                                        <span class="book-type-badge format-badge-@formatCode">@group.Key</span>
+                                    </div>
+                                    <div class="book-title" title="@book.Title">@book.Title</div>
+                                    @if (!string.IsNullOrEmpty(book.Author))
+                                    {
+                                        <div class="book-author">@book.Author</div>
+                                    }
+                                </a>
+                                <form asp-controller="Library" asp-action="Delete" method="post" onsubmit="return confirm('Delete this book?');">
+                                    <input type="hidden" name="id" value="@book.Id" />
+                                    <button type="submit" class="btn btn-sm btn-outline-danger book-delete-btn">Delete</button>
+                                </form>
+                            </div>
                         }
-                    </a>
-                    <form asp-controller="Library" asp-action="Delete" method="post" onsubmit="return confirm('Delete this book?');">
-                        <input type="hidden" name="id" value="@book.Id" />
-                        <button type="submit" class="btn btn-sm btn-outline-danger book-delete-btn">Delete</button>
-                    </form>
-                </div>
+                    </div>
+                </section>
             }
         </div>
     }

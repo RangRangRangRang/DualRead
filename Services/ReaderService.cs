@@ -57,6 +57,7 @@ public class ReaderService : IReaderService
             BookId = book.Id,
             Title = book.Title,
             Author = book.Author,
+            BookType = book.Type,
             Chapters = book.Chapters
                 .OrderBy(c => c.Order)
                 .Select(c => new ReaderChapterSummary { Id = c.Id, Order = c.Order, Title = c.Title, EpubItemHref = c.EpubItemHref })
@@ -102,7 +103,11 @@ public class ReaderService : IReaderService
 
         var sanitized = ChapterHtmlSanitizer.ExtractAndSanitize(rawHtml, originalSrc =>
         {
-            var encoded = WebUtility.UrlEncode(originalSrc);
+            // EPUB hrefs are usually already percent-encoded (e.g. "map%20-%20andor.jpg").
+            // Decode first so we don't double-encode it (which turned "%20" into "%2520"
+            // and broke asset lookup with a 404).
+            var decoded = WebUtility.UrlDecode(originalSrc);
+            var encoded = WebUtility.UrlEncode(decoded);
             return $"/Reader/{book.Id}/Asset?chapterId={chapter.Id}&src={encoded}";
         });
         sanitized = ChapterHtmlSanitizer.IndexParagraphs(sanitized);

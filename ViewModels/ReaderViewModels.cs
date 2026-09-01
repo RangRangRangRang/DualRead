@@ -8,6 +8,7 @@ public class ReaderBundleViewModel
     public Guid BookId { get; set; }
     public string Title { get; set; } = string.Empty;
     public string? Author { get; set; }
+    public BookType BookType { get; set; }
 
     public List<ReaderChapterSummary> Chapters { get; set; } = new();
 

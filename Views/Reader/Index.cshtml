@@ -7,7 +7,7 @@
     });
 }
 
-<div id="reader-app" class="reader-app reader-loading" data-book-id="@Model.BookId" data-book-type="epub">
+<div id="reader-app" class="reader-app reader-loading" data-book-id="@Model.BookId" data-book-type="@Model.BookType.ToString().ToLowerInvariant()">
     <div id="reader-loading-overlay" class="reader-loading-overlay">
         <div class="reader-loading-spinner"></div>
     </div>
