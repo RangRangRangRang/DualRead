@@ -10,11 +10,6 @@ using Microsoft.Extensions.FileProviders;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Free-tier PaaS hosts (Render, Railway, etc.) commonly inject the database location as a single
-// DATABASE_URL in URI form (postgres://user:pass@host:port/db) rather than as a Npgsql keyword
-// connection string. Prefer an explicit ConnectionStrings__DefaultConnection if one was set, but
-// fall back to translating DATABASE_URL so a plain "connect the free Postgres add-on" deploy works
-// with zero extra configuration.
 var configuredConnectionString = builder.Configuration.GetConnectionString("DefaultConnection");
 var databaseUrl = Environment.GetEnvironmentVariable("DATABASE_URL");
 if (string.IsNullOrWhiteSpace(configuredConnectionString) && !string.IsNullOrWhiteSpace(databaseUrl))
@@ -23,22 +18,15 @@ if (string.IsNullOrWhiteSpace(configuredConnectionString) && !string.IsNullOrWhi
     builder.Configuration["ConnectionStrings:DefaultConnection"] = configuredConnectionString;
 }
 
-// Most free hosts assign the listening port at runtime via PORT and terminate TLS at their edge
-// load balancer, forwarding plain HTTP to the container.
 var port = Environment.GetEnvironmentVariable("PORT");
 if (!string.IsNullOrWhiteSpace(port))
 {
     builder.WebHost.UseUrls($"http://0.0.0.0:{port}");
 }
 
-// MVC
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
 
-// Point Data Protection at a fixed on-disk folder and a stable application name. Without this,
-// ASP.NET Core re-probes for a key ring location on repeated access, which on Linux containers
-// creates a new FileSystemWatcher each time - quickly exhausting the container's inotify
-// instance cap (128) and crashing every subsequent request, including the error page itself.
 var dataProtectionKeysPath = Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys");
 Directory.CreateDirectory(dataProtectionKeysPath);
 builder.Services.AddDataProtection()
@@ -48,28 +36,25 @@ builder.Services.AddDataProtection()
 builder.Services.Configure<ForwardedHeadersOptions>(options =>
 {
     options.ForwardedHeaders = ForwardedHeaders.XForwardedFor | ForwardedHeaders.XForwardedProto;
-    // The proxy in front of the container on these hosts isn't a fixed, known IP, so trust the
-    // platform's edge network rather than restricting to a specific known proxy/network.
     options.KnownNetworks.Clear();
     options.KnownProxies.Clear();
 });
 
-// Database
 builder.Services.AddDbContext<AppDbContext>(options =>
     options.UseNpgsql(configuredConnectionString));
 
-// Repositories
 builder.Services.AddScoped<IRecoveryKeyRepository, RecoveryKeyRepository>();
 builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IReadingProgressRepository, ReadingProgressRepository>();
 builder.Services.AddScoped<ISettingsRepository, SettingsRepository>();
 builder.Services.AddScoped<IBookmarkRepository, BookmarkRepository>();
 
-// Services
 builder.Services.AddScoped<IRecoveryKeyService, RecoveryKeyService>();
 builder.Services.AddScoped<ICurrentRecoveryKeyAccessor, CurrentRecoveryKeyAccessor>();
 builder.Services.AddSingleton<IFileStorageService, FileStorageService>();
 builder.Services.AddScoped<IEpubParsingService, EpubParsingService>();
+builder.Services.AddScoped<IDocxParsingService, DocxParsingService>();
+builder.Services.AddScoped<IPdfParsingService, PdfParsingService>();
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IReaderService, ReaderService>();
 builder.Services.AddScoped<ITranslationRepository, TranslationRepository>();
@@ -91,9 +76,6 @@ else
 
 app.UseStatusCodePagesWithReExecute("/Home/StatusCode/{0}");
 
-// Skip the redirect when a platform's edge load balancer already terminates HTTPS and forwards
-// plain HTTP internally (signalled by PORT being set) - UseForwardedHeaders above still lets
-// UseHsts and any [RequireHttps] checks see the original scheme correctly.
 if (string.IsNullOrWhiteSpace(port))
 {
     app.UseHttpsRedirection();
@@ -101,7 +83,6 @@ if (string.IsNullOrWhiteSpace(port))
 
 app.UseStaticFiles();
 
-// Serve extracted cover images (stored outside wwwroot, alongside uploaded epubs) at /library-assets/...
 var fileStorage = app.Services.GetRequiredService<IFileStorageService>();
 Directory.CreateDirectory(fileStorage.UploadsRoot);
 app.UseStaticFiles(new StaticFileOptions
@@ -117,7 +98,6 @@ app.MapControllerRoute(
     name: "default",
     pattern: "{controller=Home}/{action=Index}/{id?}");
 
-// Apply pending EF Core migrations automatically on startup.
 using (var scope = app.Services.CreateScope())
 {
     var db = scope.ServiceProvider.GetRequiredService<AppDbContext>();
@@ -126,9 +106,6 @@ using (var scope = app.Services.CreateScope())
 
 app.Run();
 
-// Translates a postgres://user:password@host:port/database?sslmode=require URI - the format most
-// free-tier hosts (Render, Railway, Supabase, Neon) hand out for their managed Postgres add-ons -
-// into the keyword=value connection string Npgsql expects.
 static string ConvertDatabaseUrlToNpgsqlConnectionString(string databaseUrl)
 {
     var uri = new Uri(databaseUrl);

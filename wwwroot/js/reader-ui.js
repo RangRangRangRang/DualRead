@@ -1,7 +1,6 @@
 export function initUI(ctx) {
     const MOBILE_BREAKPOINT = 900;
     const isMobileViewport = () => window.innerWidth <= MOBILE_BREAKPOINT;
-    //just a comment
 
     function closeMobileSidebars() {
         const left = ctx.readerApp ? ctx.readerApp.querySelector('.sidebar-left') : null;
@@ -41,8 +40,6 @@ export function initUI(ctx) {
         });
         backdrop?.addEventListener('click', closeMobileSidebars);
 
-        // Selecting a chapter/bookmark or switching translation mode on a phone
-        // should close the drawer so the reading area is visible again.
         [ctx.panelChapters, ctx.panelBookmarks].forEach((panel) => {
             panel?.addEventListener('click', () => {
                 if (isMobileViewport()) closeMobileSidebars();
@@ -64,7 +61,6 @@ export function initUI(ctx) {
         };
         document.addEventListener('mousemove', showUI);
         document.addEventListener('mousedown', showUI);
-        // Touch devices never fire mousemove, so a tap has to reveal the UI too.
         document.addEventListener('touchstart', showUI, { passive: true });
         ctx.focusModeTimer = setTimeout(() => {
             if (ctx.readerApp) ctx.readerApp.classList.add('focus-mode');

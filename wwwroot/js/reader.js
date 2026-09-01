@@ -13,7 +13,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.bookTitleEl.textContent = ctx.readerData.title;
     }
 
-    // Initialize modules first so their public functions are available through ctx.api.
     initProgress(ctx);
     initTranslation(ctx);
     initNavigation(ctx);
@@ -33,7 +32,6 @@ document.addEventListener('DOMContentLoaded', () => {
         ctx.api.loadChapter(restoredIndex >= 0 ? restoredIndex : 0, progress.currentScrollOffset || 0);
     }
 
-    // Restore translation mode without triggering an extra save.
     ctx.api.setTranslationMode(!!progress.translationModeOn, true);
 
     ctx.api.setupEventListeners();

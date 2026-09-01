@@ -5,7 +5,7 @@
 <div class="landing-gateway">
     <div class="gateway-card">
         <h1 class="gateway-title">Upload books</h1>
-        <p class="gateway-subtitle">Choose one or more .epub files, or drag them here</p>
+        <p class="gateway-subtitle">Choose one or more .epub, .pdf, or .docx files, or drag them here</p>
 
         @if (!ViewData.ModelState.IsValid)
         {
@@ -29,8 +29,8 @@
             @Html.AntiForgeryToken()
             <label for="lib-file-input" class="upload-dropzone-large" id="lib-dropzone">
                 <div class="dropzone-icon">📁</div>
-                <div class="dropzone-text" id="lib-dropzone-label">Drag &amp; drop .epub files here or click to choose (multiple allowed)</div>
-                <input type="file" id="lib-file-input" name="epubFiles" accept=".epub" multiple hidden />
+                <div class="dropzone-text" id="lib-dropzone-label">Drag &amp; drop .epub, .pdf, .docx files here or click to choose (multiple allowed)</div>
+                <input type="file" id="lib-file-input" name="epubFiles" accept=".epub,.pdf,.docx" multiple hidden />
             </label>
 
             <ul class="upload-file-list" id="lib-file-list" hidden></ul>
@@ -54,7 +54,7 @@
                 dropzoneLabelEl: document.getElementById('lib-dropzone-label'),
                 listEl: document.getElementById('lib-file-list'),
                 uploadBtn: document.getElementById('lib-btn-upload'),
-                defaultLabelText: 'Drag & drop .epub files here or click to choose (multiple allowed)'
+                defaultLabelText: 'Drag & drop .epub, .pdf, .docx files here or click to choose (multiple allowed)'
             });
         });
     </script>

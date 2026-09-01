@@ -1,4 +1,4 @@
-﻿using DocumentFormat.OpenXml;
+using DocumentFormat.OpenXml;
 using DocumentFormat.OpenXml.Packaging;
 using DocumentFormat.OpenXml.Wordprocessing;
 using DualRead.Models;
@@ -27,7 +27,6 @@ public class TranslationExportService : ITranslationExportService
     {
         var book = await _bookRepository.GetByIdWithChaptersAsync(bookId);
         if (book is null || book.RecoveryKeyId != recoveryKeyId) return null;
-        if (book.Type != BookType.Epub) return null;
 
         var chapters = book.Chapters.OrderBy(c => c.Order).ToList();
         var translations = await _translationRepository.GetByBookIdAsync(bookId);

@@ -1,6 +1,3 @@
-﻿// Library page: client-side search, sort, and grid/list view toggle.
-// Everything here operates on the book cards already rendered by the server - no extra
-// requests are made, since the full library for a recovery key is small and already in the DOM.
 (function () {
     'use strict';
 
@@ -10,7 +7,7 @@
 
     document.addEventListener('DOMContentLoaded', function () {
         var grid = document.getElementById('library-book-grid');
-        if (!grid) return; // Empty-library state has no toolbar/grid to wire up.
+        if (!grid) return;
 
         var searchInput = document.getElementById('library-search-input');
         var searchClearBtn = document.getElementById('library-search-clear');
@@ -55,15 +52,13 @@
                 }
             });
 
-            // Re-append in the new order; hidden/visible state (from applyFilter) is untouched
-            // since we're moving existing nodes, not recreating them.
             sorted.forEach(function (card) {
                 grid.appendChild(card);
             });
 
             try {
                 localStorage.setItem(SORT_STORAGE_KEY, mode);
-            } catch (e) { /* localStorage unavailable (private mode, quota) - not critical */ }
+            } catch (e) { }
         }
 
         function setView(view) {
@@ -75,7 +70,7 @@
 
             try {
                 localStorage.setItem(VIEW_STORAGE_KEY, view);
-            } catch (e) { /* localStorage unavailable - default view is fine */ }
+            } catch (e) { }
         }
 
         searchInput.addEventListener('input', function () {
@@ -94,13 +89,12 @@
         viewGridBtn.addEventListener('click', function () { setView('grid'); });
         viewListBtn.addEventListener('click', function () { setView('list'); });
 
-        // Restore saved preferences (view mode + sort order) from the last visit.
         var savedView = null;
         var savedSort = null;
         try {
             savedView = localStorage.getItem(VIEW_STORAGE_KEY);
             savedSort = localStorage.getItem(SORT_STORAGE_KEY);
-        } catch (e) { /* localStorage unavailable - fall back to defaults below */ }
+        } catch (e) { }
 
         if (savedView === 'list' || savedView === 'grid') {
             setView(savedView);

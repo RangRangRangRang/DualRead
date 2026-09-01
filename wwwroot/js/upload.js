@@ -1,17 +1,17 @@
-﻿
+
 function initMultiFileUpload(options) {
     const dropzoneEl = options.dropzoneEl;
     const fileInput = options.fileInput;
     const dropzoneLabelEl = options.dropzoneLabelEl;
     const listEl = options.listEl;
     const uploadBtn = options.uploadBtn;
-    const defaultLabelText = options.defaultLabelText || 'Drag & drop .epub files here or click to choose (multiple allowed)';
+    const defaultLabelText = options.defaultLabelText || 'Drag & drop .epub, .pdf, .docx files here or click to choose (multiple allowed)';
 
     if (!dropzoneEl || !fileInput || !dropzoneLabelEl || !listEl || !uploadBtn) return;
 
-    const ALLOWED_EXTENSION = '.epub';
+    const ALLOWED_EXTENSIONS = ['.epub', '.pdf', '.docx'];
 
-                let selectedFiles = [];     let errorResetTimer = null;
+    let selectedFiles = [];     let errorResetTimer = null;
 
     function fileKey(file) {
         return file.name + '::' + file.size + '::' + file.lastModified;
@@ -23,8 +23,9 @@ function initMultiFileUpload(options) {
         return (bytes / (1024 * 1024)).toFixed(1) + ' MB';
     }
 
-    function isEpub(file) {
-        return file.name.toLowerCase().endsWith(ALLOWED_EXTENSION);
+    function isSupportedFile(file) {
+        const lower = file.name.toLowerCase();
+        return ALLOWED_EXTENSIONS.some(ext => lower.endsWith(ext));
     }
 
     function showTransientMessage(message, isError) {
@@ -43,7 +44,7 @@ function initMultiFileUpload(options) {
         }
     }
 
-            function syncNativeInput() {
+    function syncNativeInput() {
         const dataTransfer = new DataTransfer();
         selectedFiles.forEach(entry => dataTransfer.items.add(entry.file));
         fileInput.files = dataTransfer.files;
@@ -110,7 +111,7 @@ function initMultiFileUpload(options) {
         refresh();
     }
 
-            function addFiles(fileList) {
+    function addFiles(fileList) {
         const files = Array.from(fileList || []);
         if (files.length === 0) return;
 
@@ -118,7 +119,7 @@ function initMultiFileUpload(options) {
         const rejectedDuplicate = [];
 
         files.forEach(file => {
-            if (!isEpub(file)) {
+            if (!isSupportedFile(file)) {
                 rejectedInvalid.push(file.name);
                 return;
             }
@@ -133,7 +134,7 @@ function initMultiFileUpload(options) {
         refresh();
 
         if (rejectedInvalid.length > 0) {
-            showTransientMessage('Only .epub files are supported - skipped: ' + rejectedInvalid.join(', '), true);
+            showTransientMessage('Only .epub, .pdf, .docx files are supported - skipped: ' + rejectedInvalid.join(', '), true);
         } else if (rejectedDuplicate.length > 0) {
             showTransientMessage('Already added - skipped duplicate: ' + rejectedDuplicate.join(', '), true);
         }

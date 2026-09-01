@@ -154,7 +154,7 @@
                     navigator.clipboard.writeText(key).then(function() {
                         btn.textContent = 'Copied!';
                         setTimeout(function() { btn.textContent = restore; }, 1500);
-                    }).catch(function() { /* clipboard unavailable - key is still visible */ });
+                    }).catch(function() { });
                 });
             });
 

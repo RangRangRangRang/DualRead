@@ -6,31 +6,26 @@
 <div class="landing-gateway">
     <div class="gateway-card">
         <h1 class="gateway-title">Hello, Welcome to DualRead</h1>
-        <p class="gateway-subtitle">Click button or drag & drop to upload your EPUB book(s)</p>
+        <p class="gateway-subtitle">Click button or drag & drop to upload your EPUB, PDF, or Word document(s)</p>
 
-        
         <form id="gateway-upload-form" action="/Library/Upload" method="post" enctype="multipart/form-data" class="gateway-section">
             @Html.AntiForgeryToken()
             <label for="gateway-file-input" class="upload-dropzone-large" id="gateway-dropzone">
                 <div class="dropzone-icon">📁</div>
-                <div class="dropzone-text" id="gateway-dropzone-label">Drag & drop .epub files here or click to choose (multiple allowed)</div>
-                <input type="file" id="gateway-file-input" name="epubFiles" accept=".epub" multiple hidden />
+                <div class="dropzone-text" id="gateway-dropzone-label">Drag & drop .epub, .pdf, .docx files here or click to choose (multiple allowed)</div>
+                <input type="file" id="gateway-file-input" name="epubFiles" accept=".epub,.pdf,.docx" multiple hidden />
             </label>
 
             <ul class="upload-file-list" id="gateway-file-list" hidden></ul>
 
-            
             <button type="submit" id="gateway-btn-upload" class="btn-gateway btn-teal" disabled>Upload</button>
         </form>
 
-        
         <div class="gateway-divider">
             <span>OR</span>
         </div>
 
-        
         <div class="gateway-section">
-            
             <form action="/Home/OpenLibrary" method="post" class="w-100 mb-3">
                 @Html.AntiForgeryToken()
                 <div class="key-input-group">
@@ -43,7 +38,6 @@
                 }
             </form>
 
-            
             <a href="/Library" class="btn-gateway btn-outline w-100 text-center text-decoration-none">To Library &rarr;</a>
         </div>
     </div>
@@ -59,7 +53,7 @@
                 dropzoneLabelEl: document.getElementById('gateway-dropzone-label'),
                 listEl: document.getElementById('gateway-file-list'),
                 uploadBtn: document.getElementById('gateway-btn-upload'),
-                defaultLabelText: 'Drag & drop .epub files here or click to choose (multiple allowed)'
+                defaultLabelText: 'Drag & drop .epub, .pdf, .docx files here or click to choose (multiple allowed)'
             });
         });
     </script>

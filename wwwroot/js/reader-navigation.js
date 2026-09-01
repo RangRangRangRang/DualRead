@@ -18,8 +18,6 @@ export function initNavigation(ctx) {
         ctx.chapterScrollbarThumb.style.top = `${scrollRatio * maxThumbTop}px`;
     }
 
-    // Lấy toạ độ Y từ cả sự kiện chuột (MouseEvent) lẫn cảm ứng (TouchEvent), vì trên điện
-    // thoại không có "clientY" trực tiếp trên event - nó nằm trong e.touches[0]/e.changedTouches[0].
     function getPointerY(e) {
         if (e.touches && e.touches.length > 0) return e.touches[0].clientY;
         if (e.changedTouches && e.changedTouches.length > 0) return e.changedTouches[0].clientY;
@@ -63,14 +61,11 @@ export function initNavigation(ctx) {
 
         function endDrag() { dragging = false; }
 
-        // Chuột (desktop)
         ctx.chapterScrollbarThumb.addEventListener('mousedown', startDrag);
         ctx.chapterScrollbar.addEventListener('mousedown', jumpToTrackPosition);
         document.addEventListener('mousemove', onDragMove);
         document.addEventListener('mouseup', endDrag);
 
-        // Cảm ứng (điện thoại/tablet) - passive: false vì cần preventDefault để tránh cuộn
-        // cả trang khi đang kéo thanh scrollbar.
         ctx.chapterScrollbarThumb.addEventListener('touchstart', startDrag, { passive: false });
         ctx.chapterScrollbar.addEventListener('touchstart', jumpToTrackPosition, { passive: false });
         document.addEventListener('touchmove', onDragMove, { passive: false });

@@ -14,6 +14,12 @@ RUN dotnet publish "DualRead.csproj" -c Release -o /app/publish --no-restore
 FROM mcr.microsoft.com/dotnet/aspnet:8.0 AS runtime
 WORKDIR /app
 
+# PDFtoImage renders PDF pages via PDFium (native lib, pulled in as a transitive dependency of
+# the PDFtoImage NuGet package). PDFium needs fontconfig on Linux and aspnet:8.0 is debian-slim,
+# which doesn't ship it - without this, rasterizing a scanned PDF page throws at runtime.
+RUN apt-get update && apt-get install -y --no-install-recommends libfontconfig1 \
+    && rm -rf /var/lib/apt/lists/*
+
 # Uploaded epub files and extracted covers live here at runtime.
 RUN mkdir -p /app/Uploads
 VOLUME ["/app/Uploads"]

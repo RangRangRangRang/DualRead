@@ -41,7 +41,13 @@ export function initTranslation(ctx) {
             leftCell.className = 'tr-original';
             leftCell.setAttribute('data-p-index', pIndex);
             leftCell.innerHTML = node.innerHTML;
-            leftCell.addEventListener('click', () => focusTranslationParagraph(pIndex));
+            leftCell.addEventListener('click', () => {
+                const sel = window.getSelection();
+                // Nếu người dùng đang bôi đen văn bản (để tra từ điển/dùng extension dịch),
+                // không cướp focus sang textarea vì việc focus sẽ xoá vùng bôi đen ngay lập tức.
+                if (sel && sel.toString().trim().length > 0) return;
+                focusTranslationParagraph(pIndex);
+            });
 
             const rightCell = document.createElement('textarea');
             rightCell.className = 'tr-textarea';

@@ -22,8 +22,6 @@ public class ReaderChapterSummary
     public int Order { get; set; }
     public string Title { get; set; } = string.Empty;
 
-    /// <summary>Đường dẫn của chapter bên trong file epub (vd "Text/chapter03.html"), dùng ở
-    /// client để phân giải link nội bộ &lt;a href&gt; thay vì để trình duyệt điều hướng ra ngoài app.</summary>
     public string EpubItemHref { get; set; } = string.Empty;
 }
 
@@ -34,7 +32,6 @@ public class ChapterContentDto
     public string Title { get; set; } = string.Empty;
     public string Html { get; set; } = string.Empty;
 
-    /// <summary>Any translations already saved for this chapter's paragraphs (keyed by ParagraphIndex, matching the data-p-index attributes in Html).</summary>
     public List<TranslationDto> Translations { get; set; } = new();
 }
 public class ReaderProgressDto

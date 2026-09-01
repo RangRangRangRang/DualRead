@@ -9,7 +9,9 @@ public class BookService : IBookService
 {
     private static readonly HashSet<string> SupportedExtensions = new(StringComparer.OrdinalIgnoreCase)
     {
-        ".epub"
+        ".epub",
+        ".pdf",
+        ".docx"
     };
 
     private readonly IBookRepository _bookRepository;
@@ -17,19 +19,25 @@ public class BookService : IBookService
     private readonly IRecoveryKeyService _recoveryKeyService;
     private readonly IFileStorageService _fileStorageService;
     private readonly IEpubParsingService _epubParsingService;
+    private readonly IDocxParsingService _docxParsingService;
+    private readonly IPdfParsingService _pdfParsingService;
 
     public BookService(
         IBookRepository bookRepository,
         IRecoveryKeyRepository recoveryKeyRepository,
         IRecoveryKeyService recoveryKeyService,
         IFileStorageService fileStorageService,
-        IEpubParsingService epubParsingService)
+        IEpubParsingService epubParsingService,
+        IDocxParsingService docxParsingService,
+        IPdfParsingService pdfParsingService)
     {
         _bookRepository = bookRepository;
         _recoveryKeyRepository = recoveryKeyRepository;
         _recoveryKeyService = recoveryKeyService;
         _fileStorageService = fileStorageService;
         _epubParsingService = epubParsingService;
+        _docxParsingService = docxParsingService;
+        _pdfParsingService = pdfParsingService;
     }
 
     public async Task<(Book Book, RecoveryKey RecoveryKey)> UploadBookAsync(Guid? recoveryKeyId, string originalFileName, long fileSizeBytes, Stream fileContent)
@@ -37,7 +45,7 @@ public class BookService : IBookService
         var extension = Path.GetExtension(originalFileName);
         if (!SupportedExtensions.Contains(extension))
         {
-            throw new NotSupportedException($"Unsupported file type '{extension}'. Only .epub is supported.");
+            throw new NotSupportedException($"Unsupported file type '{extension}'. Supported formats: .epub, .pdf, .docx.");
         }
 
         RecoveryKey? recoveryKey = recoveryKeyId.HasValue
@@ -48,20 +56,31 @@ public class BookService : IBookService
 
         var bookId = Guid.NewGuid();
 
-        // Save the raw file first so the parser can read it from a stable path on disk.
         var relativeFilePath = await _fileStorageService.SaveUploadAsync(recoveryKey.Id, bookId, originalFileName, fileContent);
         var absoluteFilePath = _fileStorageService.GetAbsolutePath(relativeFilePath);
 
-        var book = await BuildEpubBookAsync(recoveryKey.Id, bookId, relativeFilePath, absoluteFilePath, fileSizeBytes);
+        var book = await BuildBookAsync(recoveryKey.Id, bookId, relativeFilePath, absoluteFilePath, fileSizeBytes, extension);
 
         await _bookRepository.AddAsync(book);
 
         return (book, recoveryKey);
     }
 
-    private async Task<Book> BuildEpubBookAsync(Guid recoveryKeyId, Guid bookId, string relativeFilePath, string absoluteFilePath, long fileSizeBytes)
+    private async Task<Book> BuildBookAsync(Guid recoveryKeyId, Guid bookId, string relativeFilePath, string absoluteFilePath, long fileSizeBytes, string extension)
     {
-        var parsed = await _epubParsingService.ParseAsync(absoluteFilePath);
+        var bookType = extension.ToLowerInvariant() switch
+        {
+            ".pdf" => BookType.Pdf,
+            ".docx" => BookType.Docx,
+            _ => BookType.Epub
+        };
+
+        var parsed = bookType switch
+        {
+            BookType.Pdf => await _pdfParsingService.ParseAsync(absoluteFilePath),
+            BookType.Docx => await _docxParsingService.ParseAsync(absoluteFilePath),
+            _ => await _epubParsingService.ParseAsync(absoluteFilePath)
+        };
 
         string? relativeCoverPath = null;
         if (parsed.CoverImageBytes is { Length: > 0 })
@@ -74,7 +93,7 @@ public class BookService : IBookService
         {
             Id = bookId,
             RecoveryKeyId = recoveryKeyId,
-            Type = BookType.Epub,
+            Type = bookType,
             Title = Truncate(parsed.Title) ?? "Untitled",
             Author = Truncate(parsed.Author),
             EpubFilePath = relativeFilePath,

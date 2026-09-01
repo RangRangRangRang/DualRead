@@ -14,6 +14,8 @@ public class ReaderService : IReaderService
     private readonly IBookmarkRepository _bookmarkRepository;
     private readonly IFileStorageService _fileStorageService;
     private readonly IEpubParsingService _epubParsingService;
+    private readonly IDocxParsingService _docxParsingService;
+    private readonly IPdfParsingService _pdfParsingService;
     private readonly ITranslationRepository _translationRepository;
 
     public ReaderService(
@@ -23,6 +25,8 @@ public class ReaderService : IReaderService
         IBookmarkRepository bookmarkRepository,
         IFileStorageService fileStorageService,
         IEpubParsingService epubParsingService,
+        IDocxParsingService docxParsingService,
+        IPdfParsingService pdfParsingService,
         ITranslationRepository translationRepository)
     {
         _bookRepository = bookRepository;
@@ -31,6 +35,8 @@ public class ReaderService : IReaderService
         _bookmarkRepository = bookmarkRepository;
         _fileStorageService = fileStorageService;
         _epubParsingService = epubParsingService;
+        _docxParsingService = docxParsingService;
+        _pdfParsingService = pdfParsingService;
         _translationRepository = translationRepository;
     }
 
@@ -86,7 +92,13 @@ public class ReaderService : IReaderService
         if (chapter is null) return null;
 
         var absolutePath = _fileStorageService.GetAbsolutePath(book.EpubFilePath);
-        var rawHtml = await _epubParsingService.GetChapterHtmlAsync(absolutePath, chapter.EpubItemHref);
+
+        var rawHtml = book.Type switch
+        {
+            BookType.Pdf => await _pdfParsingService.GetChapterHtmlAsync(absolutePath, chapter.EpubItemHref, recoveryKeyId, book.Id),
+            BookType.Docx => await _docxParsingService.GetChapterHtmlAsync(absolutePath, chapter.EpubItemHref),
+            _ => await _epubParsingService.GetChapterHtmlAsync(absolutePath, chapter.EpubItemHref)
+        };
 
         var sanitized = ChapterHtmlSanitizer.ExtractAndSanitize(rawHtml, originalSrc =>
         {
@@ -121,6 +133,16 @@ public class ReaderService : IReaderService
         if (chapter is null) return null;
 
         var absolutePath = _fileStorageService.GetAbsolutePath(book.EpubFilePath);
+
+        if (book.Type == BookType.Pdf)
+        {
+            // Scanned/image-only PDF pages are pre-rendered to PNG under Uploads/.../pages/ the
+            // first time they're viewed (see PdfParsingService); serve that cached file back.
+            return await _pdfParsingService.GetRenderedPageAssetAsync(absolutePath, recoveryKeyId, book.Id, src);
+        }
+
+        if (book.Type != BookType.Epub) return null;
+
         return await _epubParsingService.GetAssetAsync(absolutePath, chapter.EpubItemHref, src);
     }
 
@@ -129,8 +151,6 @@ public class ReaderService : IReaderService
         var book = await _bookRepository.GetByIdAsync(bookId);
         if (book is null || book.RecoveryKeyId != recoveryKeyId) return false;
 
-        // A progress payload may omit the chapter for compatibility, but when
-        // a chapter is supplied it must belong to this EPUB/book.
         if (dto.CurrentChapterId.HasValue)
         {
             var bookWithChapters = await _bookRepository.GetByIdWithChaptersAsync(bookId);

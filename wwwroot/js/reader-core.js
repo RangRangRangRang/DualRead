@@ -75,7 +75,7 @@ export const translations = {
     vi: {
         backToLibrary: '← Thư viện',
         chapters: 'Mục lục',
-        bookmarks: 'Dấu trang',
+        bookmarks: 'Dấu trang', 
         addBookmark: '+ Đánh dấu vị trí này',
         noBookmarks: 'Chưa có dấu trang nào.',
         darkMode: 'Chế độ tối',

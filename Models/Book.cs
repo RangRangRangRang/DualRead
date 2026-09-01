@@ -3,17 +3,13 @@ using System.ComponentModel.DataAnnotations.Schema;
 
 namespace DualRead.Models;
 
-/// <summary>
-/// The supported book format. The application currently supports EPUB only.
-/// </summary>
 public enum BookType
 {
-    Epub = 0
+    Epub = 0,
+    Pdf = 1,
+    Docx = 2
 }
 
-/// <summary>
-/// An EPUB book stored in the library.
-/// </summary>
 public class Book
 {
     [Key]
@@ -22,9 +18,6 @@ public class Book
     [Required]
     public Guid RecoveryKeyId { get; set; }
 
-    /// <summary>
-    /// Kept as EPUB-only for compatibility with existing persisted data.
-    /// </summary>
     public BookType Type { get; set; } = BookType.Epub;
 
     [ForeignKey(nameof(RecoveryKeyId))]
