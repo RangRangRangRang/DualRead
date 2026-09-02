@@ -4,6 +4,7 @@ import { initTranslation } from './reader-translation.js';
 import { initNavigation } from './reader-navigation.js';
 import { initSettings } from './reader-settings.js';
 import { initUI } from './reader-ui.js';
+import { initBubbleTranslator } from './reader-translator-bubble.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const ctx = createReaderContext();
@@ -18,6 +19,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initNavigation(ctx);
     initSettings(ctx);
     initUI(ctx);
+    initBubbleTranslator(ctx);
 
     ctx.api.renderNavList();
     ctx.api.renderBookmarksList();

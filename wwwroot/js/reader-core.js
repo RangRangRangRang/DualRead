@@ -70,7 +70,8 @@ export const translations = {
         translateToggle: 'Translate this page',
         exportTranslation: 'Export translation (.docx)',
         previousChapter: 'Previous',
-        nextChapter: 'Next'
+        nextChapter: 'Next',
+        vocabulary: 'Vocabulary'
     },
     vi: {
         backToLibrary: '← Thư viện',
@@ -89,6 +90,7 @@ export const translations = {
         translateToggle: 'Dịch trang này',
         exportTranslation: 'Xuất bản dịch (.docx)',
         previousChapter: 'Trước',
-        nextChapter: 'Sau'
+        nextChapter: 'Sau',
+        vocabulary: 'Từ vựng'
     }
 };

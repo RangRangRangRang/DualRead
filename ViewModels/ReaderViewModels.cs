@@ -101,3 +101,8 @@ public class TranslationSaveDto
     public int ParagraphIndex { get; set; }
     public string TranslatedText { get; set; } = string.Empty;
 }
+
+public class LanguageUpdateDto
+{
+    public string Language { get; set; } = "en";
+}

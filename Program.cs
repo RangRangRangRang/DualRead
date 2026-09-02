@@ -26,6 +26,8 @@ if (!string.IsNullOrWhiteSpace(port))
 
 builder.Services.AddControllersWithViews();
 builder.Services.AddHttpContextAccessor();
+builder.Services.AddHttpClient();
+builder.Services.AddMemoryCache();
 
 var dataProtectionKeysPath = Path.Combine(builder.Environment.ContentRootPath, "DataProtection-Keys");
 Directory.CreateDirectory(dataProtectionKeysPath);
@@ -48,6 +50,7 @@ builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IReadingProgressRepository, ReadingProgressRepository>();
 builder.Services.AddScoped<ISettingsRepository, SettingsRepository>();
 builder.Services.AddScoped<IBookmarkRepository, BookmarkRepository>();
+builder.Services.AddScoped<IVocabularyRepository, VocabularyRepository>();
 
 builder.Services.AddScoped<IRecoveryKeyService, RecoveryKeyService>();
 builder.Services.AddScoped<ICurrentRecoveryKeyAccessor, CurrentRecoveryKeyAccessor>();

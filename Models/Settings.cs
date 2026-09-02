@@ -17,7 +17,7 @@ public class Settings
     public string Language { get; set; } = "en";
 
     [MaxLength(100)]
-    public string Font { get; set; } = "Georgia, serif";
+    public string Font { get; set; } = "'Times New Roman', serif";
 
     public int FontSize { get; set; } = 18;
 

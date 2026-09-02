@@ -16,6 +16,7 @@ public class AppDbContext : DbContext
     public DbSet<ReadingProgress> ReadingProgresses => Set<ReadingProgress>();
     public DbSet<Settings> Settings => Set<Settings>();
     public DbSet<Translation> Translations => Set<Translation>();
+    public DbSet<VocabularyItem> VocabularyItems => Set<VocabularyItem>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -88,6 +89,22 @@ public class AppDbContext : DbContext
                   .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasIndex(t => new { t.ChapterId, t.ParagraphIndex }).IsUnique();
+        });
+
+        modelBuilder.Entity<VocabularyItem>(entity =>
+        {
+            entity.HasOne(v => v.RecoveryKey)
+                  .WithMany()
+                  .HasForeignKey(v => v.RecoveryKeyId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(v => v.Book)
+                  .WithMany()
+                  .HasForeignKey(v => v.BookId)
+                  .OnDelete(DeleteBehavior.SetNull);
+
+            entity.HasIndex(v => v.RecoveryKeyId);
+            entity.HasIndex(v => new { v.RecoveryKeyId, v.BookId });
         });
     }
 }

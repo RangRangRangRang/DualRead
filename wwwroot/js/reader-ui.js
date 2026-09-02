@@ -161,9 +161,20 @@ export function initUI(ctx) {
         }
         if (ctx.settingLanguage) {
             ctx.settingLanguage.addEventListener('change', (e) => {
-                ctx.api.applyLanguage(e.target.value);
-                ctx.readerData.settings.language = e.target.value;
+                const lang = e.target.value;
+                ctx.api.applyLanguage(lang);
+                ctx.readerData.settings.language = lang;
+
+                if (lang === 'vi' && (!ctx.readerData.settings.font || ctx.readerData.settings.font === 'Georgia, serif')) {
+                    ctx.readerData.settings.font = "'Times New Roman', serif";
+                    if (ctx.settingFont) ctx.settingFont.value = "'Times New Roman', serif";
+                    if (ctx.readerColumns) ctx.readerColumns.style.fontFamily = "'Times New Roman', serif";
+                }
+
                 ctx.api.saveSettings();
+                try {
+                    localStorage.setItem('dualread_language', lang);
+                } catch (err) { }
                 e.target.blur();
             });
         }

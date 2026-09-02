@@ -2,6 +2,12 @@ import { translations } from './reader-core.js';
 
 export function initSettings(ctx) {
     function applyLanguage(lang) {
+        document.documentElement.lang = lang;
+        document.body.classList.toggle('lang-vi', lang === 'vi');
+        try {
+            localStorage.setItem('dualread_language', lang);
+        } catch (e) { }
+
         const dict = translations[lang] || translations.en;
         document.querySelectorAll('[data-i18n]').forEach(el => {
             const key = el.getAttribute('data-i18n');
@@ -19,12 +25,18 @@ export function initSettings(ctx) {
 
     function loadSettings() {
         const s = ctx.readerData.settings || {};
+        let savedLang = null;
+        try {
+            savedLang = localStorage.getItem('dualread_language');
+        } catch (e) { }
+
+        const language = savedLang || s.language || 'en';
+        const defaultFont = "'Times New Roman', serif";
+        const font = s.font || defaultFont;
         const fontSize = s.fontSize || 18;
         const lineHeight = s.lineHeight || 1.7;
         const letterSpacing = (s.letterSpacing !== undefined && s.letterSpacing !== null) ? s.letterSpacing : 0.05;
-        const font = s.font || 'Georgia, serif';
         const darkMode = s.darkMode !== undefined ? s.darkMode : true;
-        const language = s.language || 'en';
         ctx.readerData.settings = { darkMode, language, font, fontSize, lineHeight, letterSpacing, linesPerPage: s.linesPerPage || 25 };
 
         if (ctx.settingFontSize) {

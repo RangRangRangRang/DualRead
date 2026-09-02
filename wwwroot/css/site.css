@@ -1447,3 +1447,821 @@ body.theme-sepia .pdf-page-image {
             right: -20px;
         }
 }
+
+/* ==========================================================================
+   QUICK TRANSLATOR BUBBLE & POPOVER
+   ========================================================================== */
+
+.quick-trans-bubble {
+    position: absolute;
+    z-index: 99999;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: #0f172a;
+    color: #38bdf8;
+    border: 1px solid rgba(56, 189, 248, 0.35);
+    box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35), 0 0 12px rgba(56, 189, 248, 0.25);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    padding: 0;
+    transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), background 0.15s ease, box-shadow 0.15s ease;
+    opacity: 0;
+    transform: scale(0.85);
+}
+
+.quick-trans-bubble.show {
+    opacity: 1;
+    transform: scale(1);
+}
+
+.quick-trans-bubble:hover {
+    background: #1e293b;
+    color: #7dd3fc;
+    transform: scale(1.1);
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.4), 0 0 16px rgba(56, 189, 248, 0.4);
+}
+
+.quick-trans-popover {
+    position: absolute;
+    z-index: 100000;
+    width: 420px;
+    max-width: calc(100vw - 24px);
+    background: #0f172a;
+    color: #f1f5f9;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 14px;
+    box-shadow: 0 12px 32px -4px rgba(0, 0, 0, 0.5), 0 4px 12px rgba(0, 0, 0, 0.25);
+    display: none;
+    font-family: 'Times New Roman', Times, serif;
+    font-size: 14.5px;
+    opacity: 0;
+    transform: translateY(6px);
+    transition: opacity 0.18s ease, transform 0.18s ease;
+    overflow: hidden;
+}
+
+.quick-trans-popover.show {
+    opacity: 1;
+    transform: translateY(0);
+}
+
+.quick-trans-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 14px;
+    background: rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.07);
+}
+
+.quick-trans-title {
+    font-size: 13px;
+    font-weight: 600;
+    color: #94a3b8;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 260px;
+}
+
+.quick-trans-header-actions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.quick-trans-btn,
+.quick-trans-close-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 4px;
+    border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.quick-trans-btn:hover,
+.quick-trans-close-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.quick-trans-close-btn {
+    font-size: 18px;
+    line-height: 1;
+    width: 24px;
+    height: 24px;
+}
+
+.quick-trans-copy-btn.copied {
+    color: #10b981;
+}
+
+.quick-trans-body {
+    padding: 14px;
+    max-height: 320px;
+    overflow-y: auto;
+}
+
+.quick-trans-result {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.6;
+    color: #f8fafc;
+    margin-bottom: 8px;
+}
+
+.quick-trans-dict {
+    margin-top: 10px;
+    padding-top: 10px;
+    border-top: 1px dashed rgba(255, 255, 255, 0.1);
+}
+
+.quick-trans-dict-row {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+    font-size: 12.5px;
+}
+
+.dict-pos {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 1px 6px;
+    border-radius: 4px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dict-terms {
+    color: #cbd5e1;
+}
+
+.quick-trans-footer {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    padding: 8px 14px;
+    background: rgba(255, 255, 255, 0.02);
+    border-top: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.quick-trans-save-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 12px;
+    font-size: 12.5px;
+    font-weight: 600;
+    color: #f1f5f9;
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: background 0.15s, border-color 0.15s, color 0.15s;
+}
+
+.quick-trans-save-btn:hover {
+    background: rgba(255, 255, 255, 0.15);
+    border-color: rgba(255, 255, 255, 0.25);
+}
+
+.quick-trans-save-btn.saved {
+    background: rgba(234, 179, 8, 0.15);
+    color: #fde047;
+    border-color: rgba(234, 179, 8, 0.4);
+}
+
+/* Skeleton Loading */
+.quick-trans-skeleton {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    padding: 6px 0;
+}
+
+.skeleton-line {
+    height: 14px;
+    border-radius: 4px;
+    background: linear-gradient(90deg, rgba(255,255,255,0.06) 25%, rgba(255,255,255,0.14) 50%, rgba(255,255,255,0.06) 75%);
+    background-size: 200% 100%;
+    animation: skeletonShimmer 1.4s infinite;
+}
+
+.skeleton-line-title {
+    width: 85%;
+    height: 18px;
+}
+
+.skeleton-line-sub {
+    width: 55%;
+}
+
+@keyframes skeletonShimmer {
+    0% { background-position: 200% 0; }
+    100% { background-position: -200% 0; }
+}
+
+/* ==========================================================================
+   READER SIDEBAR VOCABULARY
+   ========================================================================== */
+
+.vocab-sidebar-search-wrap {
+    padding: 8px 10px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+}
+
+.vocab-sidebar-search-input {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    color: #f1f5f9;
+    font-size: 12.5px;
+    padding: 6px 10px;
+    border-radius: 6px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.vocab-sidebar-search-input:focus {
+    border-color: #38bdf8;
+}
+
+.vocab-sidebar-list {
+    list-style: none;
+    padding: 6px 0;
+    margin: 0;
+    max-height: 280px;
+    overflow-y: auto;
+}
+
+.vocab-sidebar-item {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 8px;
+    padding: 8px 12px;
+    cursor: pointer;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+    transition: background 0.12s;
+}
+
+.vocab-sidebar-item:hover {
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.vocab-item-main {
+    flex: 1;
+    min-width: 0;
+}
+
+.vocab-item-words {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.vocab-item-orig {
+    font-size: 13px;
+    font-weight: 600;
+    color: #f8fafc;
+    word-break: break-word;
+}
+
+.vocab-item-trans {
+    font-size: 12.5px;
+    color: #38bdf8;
+    word-break: break-word;
+}
+
+.vocab-item-context {
+    font-size: 11px;
+    color: #94a3b8;
+    font-style: italic;
+    margin-top: 4px;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+}
+
+.vocab-item-del-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    cursor: pointer;
+    font-size: 16px;
+    line-height: 1;
+    padding: 2px 4px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.vocab-item-del-btn:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+}
+
+.vocab-highlight-flash {
+    animation: flashHighlight 2.5s ease-out;
+}
+
+@keyframes flashHighlight {
+    0% { background-color: rgba(56, 189, 248, 0.35); }
+    50% { background-color: rgba(56, 189, 248, 0.2); }
+    100% { background-color: transparent; }
+}
+
+/* ==========================================================================
+   LIBRARY VOCABULARY MODAL
+   ========================================================================== */
+
+.vocab-header-btn {
+    font-size: 13.5px;
+    font-weight: 500;
+    border-radius: 8px;
+    padding: 6px 12px;
+}
+
+.vocab-modal-backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    z-index: 100000;
+    background: rgba(0, 0, 0, 0.7);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 16px;
+    animation: fadeInModal 0.2s ease-out;
+}
+
+@keyframes fadeInModal {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.vocab-modal {
+    width: 800px;
+    max-width: 100%;
+    max-height: 85vh;
+    background: #0f172a;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.7);
+    color: #f1f5f9;
+    overflow: hidden;
+}
+
+.vocab-modal-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.vocab-modal-title-group {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.vocab-modal-icon {
+    font-size: 20px;
+}
+
+.vocab-modal-title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+}
+
+.vocab-modal-count-badge {
+    background: rgba(56, 189, 248, 0.15);
+    color: #38bdf8;
+    font-size: 12px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+}
+
+.vocab-modal-close-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 24px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 4px 8px;
+    border-radius: 6px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.vocab-modal-close-btn:hover {
+    color: #fff;
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.vocab-modal-toolbar {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 20px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+    background: rgba(255, 255, 255, 0.01);
+}
+
+.vocab-modal-search-box {
+    position: relative;
+    flex: 1;
+}
+
+.vocab-search-svg {
+    position: absolute;
+    left: 10px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #64748b;
+    pointer-events: none;
+}
+
+.vocab-modal-search-input {
+    width: 100%;
+    padding: 8px 12px 8px 34px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: #f1f5f9;
+    font-size: 13.5px;
+    outline: none;
+    transition: border-color 0.15s;
+}
+
+.vocab-modal-search-input:focus {
+    border-color: #38bdf8;
+}
+
+.vocab-modal-select {
+    padding: 8px 12px;
+    background: #1e293b;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    color: #f1f5f9;
+    font-size: 13.5px;
+    outline: none;
+    max-width: 220px;
+    cursor: pointer;
+}
+
+.vocab-modal-body {
+    padding: 16px 20px;
+    overflow-y: auto;
+    flex: 1;
+    min-height: 280px;
+}
+
+.vocab-modal-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+    gap: 14px;
+}
+
+.vocab-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 12px;
+    padding: 14px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    transition: transform 0.15s ease, border-color 0.15s ease;
+}
+
+.vocab-card:hover {
+    transform: translateY(-2px);
+    border-color: rgba(56, 189, 248, 0.3);
+    background: rgba(255, 255, 255, 0.05);
+}
+
+.vocab-card-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+}
+
+.vocab-card-book-tag {
+    font-size: 11.5px;
+    color: #94a3b8;
+    background: rgba(255, 255, 255, 0.06);
+    padding: 2px 8px;
+    border-radius: 6px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 250px;
+}
+
+.vocab-card-delete-btn {
+    background: transparent;
+    border: none;
+    color: #64748b;
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    padding: 2px 6px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.vocab-card-delete-btn:hover {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.15);
+}
+
+.vocab-card-body {
+    flex: 1;
+    margin-bottom: 12px;
+}
+
+.vocab-card-orig {
+    font-size: 15px;
+    font-weight: 700;
+    color: #f8fafc;
+    margin-bottom: 4px;
+    word-break: break-word;
+}
+
+.vocab-card-trans {
+    font-size: 14px;
+    color: #38bdf8;
+    font-weight: 500;
+    line-height: 1.45;
+    margin-bottom: 8px;
+    word-break: break-word;
+}
+
+.vocab-card-context {
+    font-size: 12px;
+    color: #94a3b8;
+    font-style: italic;
+    background: rgba(0, 0, 0, 0.2);
+    padding: 6px 10px;
+    border-radius: 6px;
+    line-height: 1.45;
+}
+
+.vocab-card-footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+    padding-top: 8px;
+    font-size: 12px;
+}
+
+.vocab-card-date {
+    color: #64748b;
+}
+
+.vocab-card-copy-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    cursor: pointer;
+    font-size: 12px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: color 0.15s, background 0.15s;
+}
+
+.vocab-card-copy-btn:hover {
+    color: #f8fafc;
+    background: rgba(255, 255, 255, 0.08);
+}
+
+.vocab-modal-empty {
+    text-align: center;
+    padding: 40px 20px;
+    color: #94a3b8;
+}
+
+.vocab-empty-icon {
+    font-size: 40px;
+    margin-bottom: 12px;
+    opacity: 0.7;
+}
+
+.vocab-empty-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: #f1f5f9;
+    margin-bottom: 6px;
+}
+
+.vocab-empty-desc {
+    font-size: 13.5px;
+    max-width: 420px;
+    margin: 0 auto;
+    line-height: 1.5;
+}
+
+@media (max-width: 640px) {
+    .vocab-modal-toolbar {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .vocab-modal-select {
+        max-width: 100%;
+    }
+    .vocab-modal-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ==========================================================================
+   LIBRARY HEADER & ACTION CONTROLS
+   ========================================================================== */
+
+.library-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    gap: 14px;
+    margin-bottom: 24px;
+    padding-bottom: 16px;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+}
+
+.library-header h1 {
+    font-size: 1.85rem;
+    font-weight: 700;
+    margin: 0;
+    letter-spacing: -0.5px;
+    color: #f8fafc;
+}
+
+.library-header-actions {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
+/* Base button styles in library header */
+.lib-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    height: 36px;
+    padding: 0 13px;
+    border-radius: 8px;
+    font-size: 13.5px;
+    font-weight: 500;
+    white-space: nowrap;
+    text-decoration: none;
+    border: 1px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    user-select: none;
+    line-height: 1;
+}
+
+.lib-btn-icon {
+    font-size: 14px;
+    line-height: 1;
+}
+
+/* Primary Upload Button */
+.lib-btn-primary {
+    background: #f8fafc;
+    color: #0f172a !important;
+    font-weight: 600;
+    border-color: #f8fafc;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+}
+
+.lib-btn-primary:hover {
+    background: #e2e8f0;
+    border-color: #e2e8f0;
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+}
+
+/* Secondary (Vocab) Button */
+.lib-btn-secondary {
+    background: rgba(255, 255, 255, 0.06);
+    color: #f1f5f9;
+    border-color: rgba(255, 255, 255, 0.14);
+}
+
+.lib-btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: rgba(255, 255, 255, 0.25);
+    color: #fff;
+}
+
+.lib-badge-count {
+    background: #0284c7;
+    color: #fff;
+    font-size: 11px;
+    font-weight: 700;
+    padding: 2px 6px;
+    border-radius: 10px;
+    min-width: 18px;
+    text-align: center;
+}
+
+/* Key Badge Button */
+.lib-btn-key {
+    background: rgba(15, 23, 42, 0.6);
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    color: #cbd5e1;
+    font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    font-size: 12.5px;
+    letter-spacing: 0.5px;
+}
+
+.lib-btn-key:hover {
+    background: rgba(255, 255, 255, 0.08);
+    border-color: #38bdf8;
+    color: #38bdf8;
+}
+
+/* Segmented Control for Language Switch (EN | VI) */
+.lang-segmented-control {
+    display: inline-flex;
+    align-items: center;
+    background: rgba(255, 255, 255, 0.06);
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    border-radius: 8px;
+    padding: 2px;
+    height: 36px;
+}
+
+.lang-seg-btn {
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-size: 12.5px;
+    font-weight: 600;
+    height: 30px;
+    padding: 0 10px;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    letter-spacing: 0.5px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.lang-seg-btn:hover {
+    color: #f1f5f9;
+}
+
+.lang-seg-btn.active {
+    background: #38bdf8;
+    color: #0f172a;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+}
+
+/* Default font for application */
+body,
+.reader-content-box,
+.library-page,
+.vocab-modal {
+    font-family: 'Times New Roman', Times, 'Liberation Serif', serif;
+}
+
+@media (max-width: 640px) {
+    .library-header {
+        flex-direction: column;
+        align-items: stretch;
+    }
+    .library-header-actions {
+        flex-wrap: wrap;
+        justify-content: flex-start;
+    }
+}
+
+

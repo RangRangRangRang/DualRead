@@ -1,4 +1,7 @@
+using DualRead.Models;
+using DualRead.Repositories.Interfaces;
 using DualRead.Services.Interfaces;
+using DualRead.ViewModels;
 using Microsoft.AspNetCore.Mvc;
 
 namespace DualRead.Controllers;
@@ -8,11 +11,16 @@ public class LibraryController : Controller
     private const long MaxUploadBytes = 200 * 1024 * 1024;
     private readonly IBookService _bookService;
     private readonly ICurrentRecoveryKeyAccessor _currentRecoveryKeyAccessor;
+    private readonly ISettingsRepository _settingsRepo;
 
-    public LibraryController(IBookService bookService, ICurrentRecoveryKeyAccessor currentRecoveryKeyAccessor)
+    public LibraryController(
+        IBookService bookService,
+        ICurrentRecoveryKeyAccessor currentRecoveryKeyAccessor,
+        ISettingsRepository settingsRepo)
     {
         _bookService = bookService;
         _currentRecoveryKeyAccessor = currentRecoveryKeyAccessor;
+        _settingsRepo = settingsRepo;
     }
 
     [HttpGet]
@@ -25,8 +33,41 @@ public class LibraryController : Controller
         }
 
         var books = await _bookService.GetLibraryAsync(recoveryKey.Id);
+        var settings = await _settingsRepo.GetByRecoveryKeyIdAsync(recoveryKey.Id);
         ViewBag.RecoveryKeyCode = recoveryKey.Code;
+        ViewBag.Language = settings?.Language ?? "en";
+        ViewBag.Font = settings?.Font ?? "Georgia, serif";
         return View(books);
+    }
+
+    [HttpPost("/api/settings/language")]
+    public async Task<IActionResult> SaveLanguage([FromBody] LanguageUpdateDto? dto)
+    {
+        if (dto is null || string.IsNullOrWhiteSpace(dto.Language))
+        {
+            return BadRequest("Language is required.");
+        }
+
+        var recoveryKey = await _currentRecoveryKeyAccessor.GetCurrentAsync();
+        if (recoveryKey is null) return Unauthorized();
+
+        var settings = await _settingsRepo.GetByRecoveryKeyIdAsync(recoveryKey.Id);
+        if (settings is null)
+        {
+            settings = new Settings
+            {
+                RecoveryKeyId = recoveryKey.Id,
+                Language = dto.Language
+            };
+            await _settingsRepo.AddAsync(settings);
+        }
+        else
+        {
+            settings.Language = dto.Language;
+            await _settingsRepo.SaveAsync(settings);
+        }
+
+        return Ok(new { success = true, language = settings.Language });
     }
 
     [HttpGet]

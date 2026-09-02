@@ -41,6 +41,19 @@
             <button type="button" class="sidebar-toggle" data-i18n="bookmarks" data-panel="panel-bookmarks">Bookmarks</button>
             <ul id="panel-bookmarks" class="sidebar-panel sidebar-list open"></ul>
         </div>
+
+        <div class="sidebar-section">
+            <button type="button" class="sidebar-toggle" data-i18n="vocabulary" data-panel="panel-vocabulary">
+                <span data-i18n="vocabulary">Vocabulary</span> (<span id="vocab-sidebar-count">0</span>)
+            </button>
+            <div id="panel-vocabulary" class="sidebar-panel sidebar-list open">
+                <div class="vocab-sidebar-search-wrap">
+                    <input type="search" id="vocab-sidebar-search" class="vocab-sidebar-search-input" placeholder="Search words in this book..." autocomplete="off" />
+                </div>
+                <ul id="vocab-sidebar-list" class="vocab-sidebar-list"></ul>
+                <div id="vocab-sidebar-empty" class="vocab-sidebar-empty" style="display:none;"></div>
+            </div>
+        </div>
     </aside>
 
     <main id="reader-center" class="reader-center">
