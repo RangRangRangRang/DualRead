@@ -12,11 +12,11 @@
                 <button type="button" class="lang-seg-btn @(currentLang == "en" ? "active" : "")" data-lang="en">EN</button>
                 <button type="button" class="lang-seg-btn @(currentLang == "vi" ? "active" : "")" data-lang="vi">VI</button>
             </div>
-            <button type="button" id="open-vocab-modal-btn" class="lib-btn lib-btn-secondary" title="Xem tất cả từ vựng đã lưu">
-                <span data-i18n="vocabNotebook">Sổ từ vựng</span>
+            <button type="button" id="open-vocab-modal-btn" class="lib-btn lib-btn-secondary" title="View all saved vocabulary" data-i18n-title="vocabNotebookTitle">
+                <span data-i18n="vocabNotebook">Vocabulary Bank</span>
                 <span id="library-vocab-total-count" class="lib-badge-count" style="display:none;">0</span>
             </button>
-            <button type="button" class="lib-btn lib-btn-key recovery-badge-btn" title="Click để sao chép mã khôi phục"
+            <button type="button" class="lib-btn lib-btn-key recovery-badge-btn" title="Click to copy recovery key" data-i18n-title="copyRecoveryKeyTitle"
                     data-copy-key="@ViewBag.RecoveryKeyCode">
                 <span class="recovery-badge-text">@ViewBag.RecoveryKeyCode</span>
             </button>

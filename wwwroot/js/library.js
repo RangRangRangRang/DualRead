@@ -11,6 +11,8 @@
             library: 'Library',
             upload: '+ Upload',
             vocabNotebook: 'Vocabulary Bank',
+            vocabNotebookTitle: 'View all saved vocabulary',
+            copyRecoveryKeyTitle: 'Click to copy recovery key',
             noBooks: 'No books yet. Upload your first EPUB, PDF, or DOCX to get started.',
             searchPlaceholder: 'Search by title or author…',
             sortRecentDesc: 'Newest',
@@ -37,6 +39,8 @@
             library: 'Thư viện',
             upload: '+ Tải sách lên',
             vocabNotebook: 'Sổ từ vựng',
+            vocabNotebookTitle: 'Xem tất cả từ vựng đã lưu',
+            copyRecoveryKeyTitle: 'Click để sao chép mã khôi phục',
             noBooks: 'Chưa có sách nào. Hãy tải lên tệp EPUB, PDF hoặc DOCX đầu tiên để bắt đầu.',
             searchPlaceholder: 'Tìm theo tên sách hoặc tác giả…',
             sortRecentDesc: 'Mới nhất',
@@ -80,6 +84,19 @@
             document.querySelectorAll('[data-i18n]').forEach(function (el) {
                 var key = el.getAttribute('data-i18n');
                 if (dict[key]) el.textContent = dict[key];
+            });
+
+            document.querySelectorAll('[data-i18n-aria]').forEach(function (el) {
+                var key = el.getAttribute('data-i18n-aria');
+                if (dict[key]) {
+                    el.setAttribute('aria-label', dict[key]);
+                    el.title = dict[key];
+                }
+            });
+
+            document.querySelectorAll('[data-i18n-title]').forEach(function (el) {
+                var key = el.getAttribute('data-i18n-title');
+                if (dict[key]) el.title = dict[key];
             });
 
             document.querySelectorAll('[data-i18n-placeholder]').forEach(function (el) {

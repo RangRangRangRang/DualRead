@@ -48,7 +48,7 @@
             </button>
             <div id="panel-vocabulary" class="sidebar-panel sidebar-list open">
                 <div class="vocab-sidebar-search-wrap">
-                    <input type="search" id="vocab-sidebar-search" class="vocab-sidebar-search-input" placeholder="Search words in this book..." autocomplete="off" />
+                    <input type="search" id="vocab-sidebar-search" class="vocab-sidebar-search-input" placeholder="Search words in this book..." data-i18n-placeholder="vocabSearchPlaceholder" autocomplete="off" />
                 </div>
                 <ul id="vocab-sidebar-list" class="vocab-sidebar-list"></ul>
                 <div id="vocab-sidebar-empty" class="vocab-sidebar-empty" style="display:none;"></div>
@@ -62,13 +62,13 @@
                 <span aria-hidden="true">&#9776;</span>
             </button>
             <div class="reader-book-title" id="reader-book-title"></div>
-            <button type="button" id="translate-toggle" class="translate-toggle-btn" data-i18n="translateToggle" aria-pressed="false">
+            <button type="button" id="translate-toggle" class="translate-toggle-btn" aria-pressed="false" data-i18n-aria="translateToggle" title="Translate this page">
                 <span class="translate-toggle-icon" aria-hidden="true">&#127760;</span>
-                <span class="translate-toggle-label">Dịch</span>
+                <span class="translate-toggle-label" data-i18n="translateToggle">Translate this page</span>
             </button>
-            <a id="export-translation-btn" class="export-translation-btn" href="@Url.Action("ExportTranslation", "Reader", new { id = Model.BookId })" data-i18n-aria="exportTranslation">
+            <a id="export-translation-btn" class="export-translation-btn" href="@Url.Action("ExportTranslation", "Reader", new { id = Model.BookId })" data-i18n-aria="exportTranslation" title="Export translation (.docx)">
                 <span class="export-translation-icon" aria-hidden="true">&#128190;</span>
-                <span class="export-translation-label" data-i18n="exportTranslation">Xuất bản dịch (.docx)</span>
+                <span class="export-translation-label" data-i18n="exportTranslation">Export translation (.docx)</span>
             </a>
             <button type="button" id="sidebar-right-toggle" class="icon-toggle-btn sidebar-open-btn" aria-label="Settings" aria-controls="sidebar-right" aria-expanded="false">
                 <span aria-hidden="true">&#9881;</span>
@@ -85,14 +85,14 @@
 
     <aside id="sidebar-right" class="sidebar sidebar-right">
         <div class="sidebar-section">
-            <label class="settings-label" data-i18n="darkMode">Chế độ tối</label>
+            <label class="settings-label" data-i18n="darkMode">Dark Mode</label>
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="setting-dark-mode" checked>
             </div>
         </div>
 
         <div class="sidebar-section">
-            <label class="settings-label" data-i18n="eyeComfort">Chống mỏi mắt (Sepia)</label>
+            <label class="settings-label" data-i18n="eyeComfort">Eye Comfort (Sepia)</label>
             <div class="form-check form-switch">
                 <input class="form-check-input" type="checkbox" id="setting-eye-comfort">
             </div>

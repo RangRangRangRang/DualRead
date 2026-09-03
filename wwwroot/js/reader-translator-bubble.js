@@ -1,3 +1,10 @@
+import { translations } from './reader-core.js';
+
+function getDict(ctx) {
+    const lang = ctx?.readerData?.settings?.language || (ctx?.settingLanguage ? ctx.settingLanguage.value : (document.documentElement.lang || 'en'));
+    return translations[lang] || translations.en;
+}
+
 export function initBubbleTranslator(ctx) {
     let currentSelectionText = '';
     let currentContextText = '';
@@ -8,13 +15,15 @@ export function initBubbleTranslator(ctx) {
 
     // Create DOM elements if not already present
     let bubble = document.getElementById('quick-trans-bubble');
+    const initDict = getDict(ctx);
+
     if (!bubble) {
         bubble = document.createElement('button');
         bubble.id = 'quick-trans-bubble';
         bubble.className = 'quick-trans-bubble';
         bubble.setAttribute('type', 'button');
-        bubble.setAttribute('title', 'Dịch');
-        bubble.setAttribute('aria-label', 'Dịch vùng chọn');
+        bubble.setAttribute('title', initDict.translateBubbleTitle);
+        bubble.setAttribute('aria-label', initDict.translateBubbleAria);
         bubble.innerHTML = `
             <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
                 <circle cx="11" cy="11" r="8"></circle>
@@ -32,7 +41,7 @@ export function initBubbleTranslator(ctx) {
         popover.id = 'quick-trans-popover';
         popover.className = 'quick-trans-popover';
         popover.setAttribute('role', 'dialog');
-        popover.setAttribute('aria-label', 'Bản dịch nhanh');
+        popover.setAttribute('aria-label', initDict.quickTransTitle);
         document.body.appendChild(popover);
     }
 
@@ -217,7 +226,7 @@ export function initBubbleTranslator(ctx) {
             }
 
             if (!data || !data.translatedText) {
-                throw new Error('Không nhận được dữ liệu dịch');
+                throw new Error('No translation data received');
             }
 
             currentTranslatedText = data.translatedText || currentSelectionText;
@@ -233,11 +242,12 @@ export function initBubbleTranslator(ctx) {
     });
 
     function renderPopoverLoading(original) {
+        const dict = getDict(ctx);
         const displayTitle = original.length > 35 ? original.substring(0, 35) + '...' : original;
         popover.innerHTML = `
             <div class="quick-trans-header">
                 <div class="quick-trans-title" title="${escapeHtml(original)}">${escapeHtml(displayTitle)}</div>
-                <button type="button" class="quick-trans-close-btn" aria-label="Đóng">&times;</button>
+                <button type="button" class="quick-trans-close-btn" aria-label="${escapeHtml(dict.close)}">&times;</button>
             </div>
             <div class="quick-trans-body">
                 <div class="quick-trans-skeleton">
@@ -251,6 +261,7 @@ export function initBubbleTranslator(ctx) {
     }
 
     function renderPopoverContent(data, isSaved) {
+        const dict = getDict(ctx);
         const original = data.originalText;
         const displayTitle = original.length > 35 ? original.substring(0, 35) + '...' : original;
         const translated = data.translatedText;
@@ -273,13 +284,13 @@ export function initBubbleTranslator(ctx) {
             <div class="quick-trans-header">
                 <div class="quick-trans-title" title="${escapeHtml(original)}">${escapeHtml(displayTitle)}</div>
                 <div class="quick-trans-header-actions">
-                    <button type="button" class="quick-trans-btn quick-trans-copy-btn" title="Sao chép bản dịch" aria-label="Copy">
+                    <button type="button" class="quick-trans-btn quick-trans-copy-btn" title="${escapeHtml(dict.copyTranslation)}" aria-label="${escapeHtml(dict.copyTranslation)}">
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
                             <path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"></path>
                         </svg>
                     </button>
-                    <button type="button" class="quick-trans-close-btn" aria-label="Đóng">&times;</button>
+                    <button type="button" class="quick-trans-close-btn" aria-label="${escapeHtml(dict.close)}">&times;</button>
                 </div>
             </div>
             <div class="quick-trans-body">
@@ -289,7 +300,7 @@ export function initBubbleTranslator(ctx) {
             <div class="quick-trans-footer">
                 <button type="button" class="quick-trans-save-btn ${isSaved ? 'saved' : ''}" id="popover-save-vocab-btn">
                     <span class="save-icon">${isSaved ? '★' : '⭐'}</span>
-                    <span class="save-label">${isSaved ? 'Đã lưu vào sổ' : 'Lưu từ vựng'}</span>
+                    <span class="save-label">${isSaved ? escapeHtml(dict.savedVocab) : escapeHtml(dict.saveVocab)}</span>
                 </button>
             </div>
         `;
@@ -301,6 +312,7 @@ export function initBubbleTranslator(ctx) {
         copyBtn?.addEventListener('click', () => {
             navigator.clipboard.writeText(translated).then(() => {
                 copyBtn.classList.add('copied');
+                copyBtn.setAttribute('title', dict.copied);
                 copyBtn.innerHTML = `
                     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
                         <polyline points="20 6 9 17 4 12"></polyline>
@@ -308,6 +320,7 @@ export function initBubbleTranslator(ctx) {
                 `;
                 setTimeout(() => {
                     copyBtn.classList.remove('copied');
+                    copyBtn.setAttribute('title', dict.copyTranslation);
                     copyBtn.innerHTML = `
                         <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <rect x="9" y="9" width="13" height="13" rx="2" ry="2"></rect>
@@ -325,9 +338,10 @@ export function initBubbleTranslator(ctx) {
             saveBtn.disabled = true;
             try {
                 const currentChapter = ctx.chapters[ctx.currentChapterIndex];
+                const currentDict = getDict(ctx);
                 const payload = {
                     bookId: ctx.bookId,
-                    bookTitle: ctx.readerData?.title || 'Sách',
+                    bookTitle: ctx.readerData?.title || currentDict.bookFallback,
                     chapterId: currentChapter?.id,
                     chapterTitle: currentChapter?.title || '',
                     originalText: original,
@@ -345,7 +359,7 @@ export function initBubbleTranslator(ctx) {
                     const savedItem = await res.json();
                     currentVocabList.unshift(savedItem);
                     saveBtn.classList.add('saved');
-                    saveBtn.innerHTML = `<span class="save-icon">★</span> <span class="save-label">Đã lưu vào sổ</span>`;
+                    saveBtn.innerHTML = `<span class="save-icon">★</span> <span class="save-label">${escapeHtml(currentDict.savedVocab)}</span>`;
                     
                     // Refresh reader sidebar vocabulary
                     renderSidebarVocabularyList(ctx, currentVocabList);
@@ -360,16 +374,44 @@ export function initBubbleTranslator(ctx) {
     }
 
     function renderPopoverError() {
+        const dict = getDict(ctx);
         popover.innerHTML = `
             <div class="quick-trans-header">
-                <div class="quick-trans-title">Lỗi dịch thuật</div>
-                <button type="button" class="quick-trans-close-btn" aria-label="Đóng">&times;</button>
+                <div class="quick-trans-title">${escapeHtml(dict.transErrorTitle)}</div>
+                <button type="button" class="quick-trans-close-btn" aria-label="${escapeHtml(dict.close)}">&times;</button>
             </div>
             <div class="quick-trans-body">
-                <p class="text-danger" style="margin:0; font-size:13px;">Không thể kết nối đến máy chủ dịch thuật. Vui lòng thử lại sau.</p>
+                <p class="text-danger" style="margin:0; font-size:13px;">${escapeHtml(dict.transErrorDesc)}</p>
             </div>
         `;
         popover.querySelector('.quick-trans-close-btn')?.addEventListener('click', hideAll);
+    }
+
+    function updateBubbleAndPopoverLanguage() {
+        const dict = getDict(ctx);
+        if (bubble) {
+            bubble.setAttribute('title', dict.translateBubbleTitle);
+            bubble.setAttribute('aria-label', dict.translateBubbleAria);
+        }
+        if (popover) {
+            popover.setAttribute('aria-label', dict.quickTransTitle);
+            const closeBtn = popover.querySelector('.quick-trans-close-btn');
+            if (closeBtn) closeBtn.setAttribute('aria-label', dict.close);
+
+            const copyBtn = popover.querySelector('.quick-trans-copy-btn');
+            if (copyBtn) {
+                const isCopied = copyBtn.classList.contains('copied');
+                copyBtn.setAttribute('title', isCopied ? dict.copied : dict.copyTranslation);
+                copyBtn.setAttribute('aria-label', isCopied ? dict.copied : dict.copyTranslation);
+            }
+
+            const saveBtn = popover.querySelector('#popover-save-vocab-btn');
+            if (saveBtn) {
+                const isSaved = saveBtn.classList.contains('saved');
+                const labelSpan = saveBtn.querySelector('.save-label');
+                if (labelSpan) labelSpan.textContent = isSaved ? dict.savedVocab : dict.saveVocab;
+            }
+        }
     }
 
     // Click outside to dismiss popover and bubble
@@ -427,6 +469,18 @@ export function initBubbleTranslator(ctx) {
         }
     }
 
+    function refreshVocabularyUI() {
+        const searchInput = document.getElementById('vocab-sidebar-search');
+        const query = searchInput ? searchInput.value.toLowerCase().trim() : '';
+        const filtered = query
+            ? currentVocabList.filter(v => 
+                (v.originalText && v.originalText.toLowerCase().includes(query)) ||
+                (v.translatedText && v.translatedText.toLowerCase().includes(query)) ||
+                (v.contextText && v.contextText.toLowerCase().includes(query)))
+            : currentVocabList;
+        renderSidebarVocabularyList(ctx, filtered, !!query);
+    }
+
     window.addEventListener('dualread:vocabularyUpdated', () => {
         loadSidebarVocabulary();
     });
@@ -434,12 +488,17 @@ export function initBubbleTranslator(ctx) {
     // Initial load
     loadSidebarVocabulary();
     setupSidebarVocabulary();
+
+    ctx.api.refreshVocabularyUI = refreshVocabularyUI;
+    ctx.api.updateBubbleAndPopoverLanguage = updateBubbleAndPopoverLanguage;
+    ctx.api.renderSidebarVocabularyList = renderSidebarVocabularyList;
 }
 
 function renderSidebarVocabularyList(ctx, list, isSearching = false) {
     const listEl = document.getElementById('vocab-sidebar-list');
     const emptyEl = document.getElementById('vocab-sidebar-empty');
     const countBadge = document.getElementById('vocab-sidebar-count');
+    const dict = getDict(ctx);
 
     if (countBadge) {
         countBadge.textContent = list.length;
@@ -451,7 +510,7 @@ function renderSidebarVocabularyList(ctx, list, isSearching = false) {
         listEl.innerHTML = '';
         if (emptyEl) {
             emptyEl.style.display = 'block';
-            emptyEl.textContent = isSearching ? 'Không tìm thấy từ vựng khớp với tìm kiếm.' : 'Chưa có từ vựng nào được lưu trong sách này.';
+            emptyEl.textContent = isSearching ? dict.vocabEmptySearch : dict.vocabEmpty;
         }
         return;
     }
@@ -466,7 +525,7 @@ function renderSidebarVocabularyList(ctx, list, isSearching = false) {
                     <span class="vocab-item-trans">${escapeHtml(item.translatedText)}</span>
                 </div>
             </div>
-            <button type="button" class="vocab-item-del-btn" data-del-id="${item.id}" title="Xóa từ này" aria-label="Xóa">
+            <button type="button" class="vocab-item-del-btn" data-del-id="${item.id}" title="${escapeHtml(dict.deleteWord)}" aria-label="${escapeHtml(dict.delete)}">
                 &times;
             </button>
         </li>
@@ -486,7 +545,7 @@ function renderSidebarVocabularyList(ctx, list, isSearching = false) {
                     window.dispatchEvent(new CustomEvent('dualread:vocabularyUpdated'));
                 }
             } catch (err) {
-                console.error('Lỗi xóa từ vựng:', err);
+                console.error('Failed to delete vocabulary:', err);
             }
         });
     });

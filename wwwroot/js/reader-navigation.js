@@ -87,10 +87,12 @@ export function initNavigation(ctx) {
     function renderNavList() {
         if (!ctx.panelChapters) return;
         ctx.panelChapters.innerHTML = '';
+        const currentLang = ctx.settingLanguage ? ctx.settingLanguage.value : 'en';
+        const dict = translations[currentLang] || translations.en;
         ctx.chapters.forEach((ch, idx) => {
             const li = document.createElement('li');
             li.className = `sidebar-list-item ${idx === ctx.currentChapterIndex ? 'active' : ''}`;
-            li.textContent = ch.title || `Chương ${idx + 1}`;
+            li.textContent = ch.title || `${dict.chapterFallback} ${idx + 1}`;
             li.addEventListener('click', () => loadChapter(idx));
             ctx.panelChapters.appendChild(li);
         });
@@ -118,7 +120,7 @@ export function initNavigation(ctx) {
         ctx.bookmarks.forEach((bm) => {
             const li = document.createElement('li');
             li.className = 'sidebar-list-item';
-            const label = bm.chapterTitle || 'Chapter';
+            const label = bm.chapterTitle || dict.chapterFallback || 'Chapter';
             const span = document.createElement('span');
             span.textContent = label;
             span.style.cssText = 'overflow:hidden; text-overflow:ellipsis; white-space:nowrap; flex:1;';
@@ -126,6 +128,8 @@ export function initNavigation(ctx) {
             const delBtn = document.createElement('button');
             delBtn.className = 'bookmark-delete';
             delBtn.innerHTML = '&times;';
+            delBtn.setAttribute('title', dict.deleteBookmark || dict.delete);
+            delBtn.setAttribute('aria-label', dict.deleteBookmark || dict.delete);
             delBtn.addEventListener('click', async (e) => {
                 e.stopPropagation();
                 ctx.bookmarks = ctx.bookmarks.filter(b => b.id !== bm.id);
@@ -156,7 +160,9 @@ export function initNavigation(ctx) {
         if (!ctx.bookId) return;
         const chapter = ctx.chapters[ctx.currentChapterIndex];
         if (!chapter) return;
-        const previewText = chapter.title || `Chương ${ctx.currentChapterIndex + 1}`;
+        const currentLang = ctx.settingLanguage ? ctx.settingLanguage.value : 'en';
+        const dict = translations[currentLang] || translations.en;
+        const previewText = chapter.title || `${dict.chapterFallback} ${ctx.currentChapterIndex + 1}`;
         const dto = {
             chapterId: chapter.id,
             pageNumber: ctx.readerViewport ? ctx.readerViewport.scrollTop : 0,

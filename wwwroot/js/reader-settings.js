@@ -20,7 +20,13 @@ export function initSettings(ctx) {
                 el.title = dict[key];
             }
         });
+        document.querySelectorAll('[data-i18n-placeholder]').forEach(el => {
+            const key = el.getAttribute('data-i18n-placeholder');
+            if (dict[key]) el.placeholder = dict[key];
+        });
         ctx.api.renderBookmarksList?.();
+        ctx.api.refreshVocabularyUI?.();
+        ctx.api.updateBubbleAndPopoverLanguage?.();
     }
 
     function loadSettings() {
