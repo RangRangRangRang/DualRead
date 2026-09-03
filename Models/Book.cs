@@ -46,4 +46,7 @@ public class Book
     public ICollection<Bookmark> Bookmarks { get; set; } = new List<Bookmark>();
 
     public ReadingProgress? ReadingProgress { get; set; }
+
+    public ICollection<AlbumBook> AlbumBooks { get; set; } = new List<AlbumBook>();
 }
+

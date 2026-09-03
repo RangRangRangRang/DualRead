@@ -17,5 +17,8 @@ public class RecoveryKey
 
     public ICollection<Book> Books { get; set; } = new List<Book>();
 
+    public ICollection<Album> Albums { get; set; } = new List<Album>();
+
     public Settings? Settings { get; set; }
 }
+

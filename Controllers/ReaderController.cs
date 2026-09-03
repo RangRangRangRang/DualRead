@@ -28,6 +28,7 @@ public class ReaderController : Controller
     }
 
     [HttpGet("{id:guid}")]
+    [HttpGet("Index/{id:guid}")]
     public async Task<IActionResult> Index(Guid id)
     {
         var recoveryKey = await _currentRecoveryKeyAccessor.GetCurrentAsync();

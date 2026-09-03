@@ -51,6 +51,7 @@ builder.Services.AddScoped<IReadingProgressRepository, ReadingProgressRepository
 builder.Services.AddScoped<ISettingsRepository, SettingsRepository>();
 builder.Services.AddScoped<IBookmarkRepository, BookmarkRepository>();
 builder.Services.AddScoped<IVocabularyRepository, VocabularyRepository>();
+builder.Services.AddScoped<IAlbumRepository, AlbumRepository>();
 
 builder.Services.AddScoped<IRecoveryKeyService, RecoveryKeyService>();
 builder.Services.AddScoped<ICurrentRecoveryKeyAccessor, CurrentRecoveryKeyAccessor>();

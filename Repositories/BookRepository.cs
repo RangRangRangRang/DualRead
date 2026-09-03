@@ -40,6 +40,12 @@ public class BookRepository : IBookRepository
         await _db.SaveChangesAsync();
     }
 
+    public async Task UpdateAsync(Book book)
+    {
+        _db.Books.Update(book);
+        await _db.SaveChangesAsync();
+    }
+
     public async Task DeleteAsync(Book book)
     {
         _db.Books.Remove(book);

@@ -6,7 +6,24 @@
 
 <div class="library-page">
     <div class="library-header">
-        <h1 data-i18n="library">Library</h1>
+        <div class="library-title-nav">
+            <h1 class="library-main-title">
+                <span data-i18n="library">Library</span>
+                <span class="library-title-sep">/</span>
+                <span id="library-current-tab-label" class="library-sub-title" data-i18n="allBooks">All Books</span>
+            </h1>
+            <div class="library-nav-tabs" role="tablist" aria-label="Library Navigation">
+                <button type="button" id="tab-btn-books" class="lib-tab-btn active" data-tab="books" role="tab" aria-selected="true">
+                    <span data-i18n="allBooks">All Books</span>
+                    <span class="lib-tab-count">@Model.Count</span>
+                </button>
+                <button type="button" id="tab-btn-albums" class="lib-tab-btn" data-tab="albums" role="tab" aria-selected="false">
+                    <span data-i18n="albums">Albums</span>
+                    <span id="header-albums-count" class="lib-tab-count" style="display:none;">0</span>
+                </button>
+            </div>
+        </div>
+
         <div class="library-header-actions">
             <div class="lang-segmented-control" role="group" aria-label="Language">
                 <button type="button" class="lang-seg-btn @(currentLang == "en" ? "active" : "")" data-lang="en">EN</button>
@@ -20,7 +37,10 @@
                     data-copy-key="@ViewBag.RecoveryKeyCode">
                 <span class="recovery-badge-text">@ViewBag.RecoveryKeyCode</span>
             </button>
-            <a class="lib-btn lib-btn-primary" asp-controller="Library" asp-action="Upload" data-i18n="upload">+ Upload</a>
+            <button type="button" id="btn-create-album-header" class="lib-btn lib-btn-accent" style="display:none;" data-i18n="newAlbum">
+                + New Album
+            </button>
+            <a id="btn-upload-header" class="lib-btn lib-btn-primary" asp-controller="Library" asp-action="Upload" data-i18n="upload">+ Upload</a>
         </div>
     </div>
 
@@ -61,117 +81,301 @@
         </div>
     }
 
-    @if (Model.Count == 0)
-    {
-        <p class="text-secondary" data-i18n="noBooks">No books yet. Upload your first EPUB, PDF, or DOCX to get started.</p>
-    }
-    else
-    {
-        <div class="library-toolbar">
-            <div class="library-search-box">
+    <!-- ========================================================================= -->
+    <!-- TAB 1: ALL BOOKS VIEW                                                     -->
+    <!-- ========================================================================= -->
+    <div id="library-books-view" class="library-tab-view active">
+        @if (Model.Count == 0)
+        {
+            <div class="library-empty-box">
+                <p class="text-secondary" data-i18n="noBooks">No books yet. Upload your first EPUB, PDF, or DOCX to get started.</p>
+                <a class="lib-btn lib-btn-primary mt-2" asp-controller="Library" asp-action="Upload" data-i18n="upload">+ Upload</a>
+            </div>
+        }
+        else
+        {
+            <div class="library-toolbar">
+                <div class="library-search-box">
+                    <svg class="library-search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                        <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5" />
+                        <path d="M11.5 11.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
+                    </svg>
+                    <input type="search" id="library-search-input" class="library-search-input"
+                           placeholder="Search by title or author…" data-i18n-placeholder="searchPlaceholder" aria-label="Search library" autocomplete="off" />
+                    <button type="button" id="library-search-clear" class="library-search-clear" aria-label="Clear search" hidden>&times;</button>
+                </div>
+
+                <div class="library-toolbar-actions">
+                    <select id="library-sort-select" class="library-sort-select" aria-label="Sort library">
+                        <option value="recent-desc" data-i18n="sortRecentDesc">Newest</option>
+                        <option value="recent-asc" data-i18n="sortRecentAsc">Oldest</option>
+                        <option value="title-asc" data-i18n="sortTitleAsc">A-Z</option>
+                        <option value="title-desc" data-i18n="sortTitleDesc">Z-A</option>
+                    </select>
+
+                    <div class="library-view-toggle" role="group" aria-label="Change view">
+                        <button type="button" id="library-view-grid" class="library-view-btn active" data-view="grid" aria-label="Grid view" aria-pressed="true">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3" />
+                                <rect x="9" y="1.5" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3" />
+                                <rect x="1.5" y="9" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3" />
+                                <rect x="9" y="9" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3" />
+                            </svg>
+                        </button>
+                        <button type="button" id="library-view-list" class="library-view-btn" data-view="list" aria-label="List view" aria-pressed="false">
+                            <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
+                                <circle cx="2" cy="3" r="1" fill="currentColor" />
+                                <circle cx="2" cy="8" r="1" fill="currentColor" />
+                                <circle cx="2" cy="13" r="1" fill="currentColor" />
+                                <path d="M5.5 3H14.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                                <path d="M5.5 8H14.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                                <path d="M5.5 13H14.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+            </div>
+
+            <p id="library-no-results" class="text-secondary" data-i18n="noResults" hidden>No books match your search.</p>
+
+            <div id="library-sections-container" class="library-sections-container">
+                @{
+                    var formatGroups = Model
+                        .GroupBy(b => b.Type)
+                        .OrderBy(g => (int)g.Key)
+                        .ToList();
+                }
+
+                @foreach (var group in formatGroups)
+                {
+                    var formatCode = group.Key.ToString().ToLowerInvariant();
+
+                    <section class="library-format-section" data-format="@formatCode">
+                        <div class="library-format-header">
+                            <div class="library-format-title-group">
+                                <span class="format-badge format-badge-@formatCode">@group.Key.ToString().ToUpperInvariant()</span>
+                                <h2 class="library-format-heading" data-i18n-format="@formatCode">@group.Key Books</h2>
+                                <span class="library-format-count">(@group.Count())</span>
+                            </div>
+                            <div class="library-format-line"></div>
+                        </div>
+
+                        <div class="book-grid">
+                            @foreach (var book in group)
+                            {
+                                var coverUrl = !string.IsNullOrEmpty(book.CoverImagePath)
+                                    ? $"/library-assets/{book.RecoveryKeyId}/{book.Id}/{System.IO.Path.GetFileName(book.CoverImagePath)}"
+                                    : "";
+
+                                <div class="book-card"
+                                     data-book-id="@book.Id"
+                                     data-title="@book.Title.ToLowerInvariant()"
+                                     data-raw-title="@book.Title"
+                                     data-author="@((book.Author ?? "").ToLowerInvariant())"
+                                     data-raw-author="@(book.Author ?? "")"
+                                     data-cover="@coverUrl"
+                                     data-type="@group.Key"
+                                     data-uploaded="@book.UploadedAtUtc.Ticks">
+                                    <a class="book-cover-link" asp-controller="Reader" asp-action="Index" asp-route-id="@book.Id">
+                                        <div class="book-cover">
+                                            @if (!string.IsNullOrEmpty(book.CoverImagePath))
+                                            {
+                                                <img src="@coverUrl" alt="@book.Title" />
+                                            }
+                                            else
+                                            {
+                                                <div class="book-cover-placeholder"></div>
+                                            }
+                                            <span class="book-type-badge format-badge-@formatCode">@group.Key</span>
+                                        </div>
+                                        <div class="book-title" title="@book.Title">@book.Title</div>
+                                        @if (!string.IsNullOrEmpty(book.Author))
+                                        {
+                                            <div class="book-author">@book.Author</div>
+                                        }
+                                    </a>
+                                    <div class="book-card-actions">
+                                        <button type="button" class="book-card-action-btn book-rename-btn"
+                                                data-book-id="@book.Id"
+                                                data-book-title="@book.Title"
+                                                data-book-author="@(book.Author ?? "")"
+                                                title="Rename book"
+                                                data-i18n-title="renameBook">
+                                            <span class="action-icon">✏️</span>
+                                            <span class="action-label" data-i18n="rename">Rename</span>
+                                        </button>
+                                        <button type="button" class="book-card-action-btn book-add-to-album-btn"
+                                                data-book-id="@book.Id"
+                                                data-book-title="@book.Title"
+                                                title="Add to album"
+                                                data-i18n-title="addToAlbum">
+                                            <span class="action-icon">➕</span>
+                                            <span class="action-label" data-i18n="album">Album</span>
+                                        </button>
+                                        <form asp-controller="Library" asp-action="Delete" method="post" onsubmit="return confirm(document.documentElement.lang === 'vi' ? 'Bạn có chắc chắn muốn xóa sách này khỏi thư viện?' : 'Delete this book from library?');" class="d-inline">
+                                            <input type="hidden" name="id" value="@book.Id" />
+                                            <button type="submit" class="book-card-action-btn book-delete-btn" title="Delete book" data-i18n-title="delete">
+                                                <span class="action-icon">🗑️</span>
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    </section>
+                }
+            </div>
+        }
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- TAB 2: ALBUMS VIEW (Banner Slide Containers)                             -->
+    <!-- ========================================================================= -->
+    <div id="library-albums-view" class="library-tab-view" style="display:none;">
+        <div class="albums-toolbar">
+            <div class="library-search-box albums-search-box">
                 <svg class="library-search-icon" width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
                     <circle cx="7" cy="7" r="5.5" stroke="currentColor" stroke-width="1.5" />
                     <path d="M11.5 11.5L14.5 14.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" />
                 </svg>
-                <input type="search" id="library-search-input" class="library-search-input"
-                       placeholder="Search by title or author…" data-i18n-placeholder="searchPlaceholder" aria-label="Search library" autocomplete="off" />
-                <button type="button" id="library-search-clear" class="library-search-clear" aria-label="Clear search" hidden>&times;</button>
+                <input type="search" id="albums-search-input" class="library-search-input"
+                       placeholder="Search albums or books in albums…" data-i18n-placeholder="searchAlbumsPlaceholder" aria-label="Search albums" autocomplete="off" />
+                <button type="button" id="albums-search-clear" class="library-search-clear" aria-label="Clear search" hidden>&times;</button>
             </div>
 
-            <div class="library-toolbar-actions">
-                <select id="library-sort-select" class="library-sort-select" aria-label="Sort library">
-                    <option value="recent-desc" data-i18n="sortRecentDesc">Newest</option>
-                    <option value="recent-asc" data-i18n="sortRecentAsc">Oldest</option>
-                    <option value="title-asc" data-i18n="sortTitleAsc">A-Z</option>
-                    <option value="title-desc" data-i18n="sortTitleDesc">Z-A</option>
-                </select>
+            <button type="button" id="btn-create-album-main" class="lib-btn lib-btn-accent" data-i18n="newAlbum">
+                ➕ <span data-i18n="newAlbum">New Album</span>
+            </button>
+        </div>
 
-                <div class="library-view-toggle" role="group" aria-label="Change view">
-                    <button type="button" id="library-view-grid" class="library-view-btn active" data-view="grid" aria-label="Grid view" aria-pressed="true">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <rect x="1.5" y="1.5" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3" />
-                            <rect x="9" y="1.5" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3" />
-                            <rect x="1.5" y="9" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3" />
-                            <rect x="9" y="9" width="5.5" height="5.5" rx="1" stroke="currentColor" stroke-width="1.3" />
-                        </svg>
-                    </button>
-                    <button type="button" id="library-view-list" class="library-view-btn" data-view="list" aria-label="List view" aria-pressed="false">
-                        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg" aria-hidden="true">
-                            <circle cx="2" cy="3" r="1" fill="currentColor" />
-                            <circle cx="2" cy="8" r="1" fill="currentColor" />
-                            <circle cx="2" cy="13" r="1" fill="currentColor" />
-                            <path d="M5.5 3H14.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
-                            <path d="M5.5 8H14.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
-                            <path d="M5.5 13H14.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" />
-                        </svg>
-                    </button>
+        <div id="albums-banner-stack" class="albums-banner-stack">
+            <!-- Dynamic Album Banner Containers rendered via JS -->
+        </div>
+
+        <div id="albums-empty-state" class="albums-empty-state" style="display:none;">
+            <div class="albums-empty-icon">📁</div>
+            <h3 class="albums-empty-title" data-i18n="noAlbumsTitle">No Albums Yet</h3>
+            <p class="albums-empty-desc" data-i18n="noAlbumsDesc">Create albums to organize your books into collections like Favorites, Sci-Fi, History, or Reading Lists.</p>
+            <button type="button" id="btn-create-first-album" class="lib-btn lib-btn-primary" data-i18n="createFirstAlbum">
+                + Create Your First Album
+            </button>
+        </div>
+
+        <p id="albums-no-results" class="text-secondary text-center mt-4" data-i18n="noAlbumsMatch" style="display:none;">No albums match your search.</p>
+    </div>
+
+    <!-- ========================================================================= -->
+    <!-- MODALS                                                                    -->
+    <!-- ========================================================================= -->
+
+    <!-- 1. Create / Rename Album Modal -->
+    <div id="album-modal-backdrop" class="lib-modal-backdrop" style="display:none;">
+        <div class="lib-modal-card" role="dialog" aria-modal="true" aria-labelledby="album-modal-title">
+            <div class="lib-modal-header">
+                <h3 id="album-modal-title" class="lib-modal-title" data-i18n="createAlbumTitle">Create New Album</h3>
+                <button type="button" class="lib-modal-close-btn" data-close-modal="album-modal-backdrop">&times;</button>
+            </div>
+            <form id="album-form">
+                <input type="hidden" id="album-edit-id" value="" />
+                <div class="lib-modal-body">
+                    <div class="lib-form-group">
+                        <label for="album-name-input" class="lib-form-label" data-i18n="albumNameLabel">Album Name *</label>
+                        <input type="text" id="album-name-input" class="lib-form-input" placeholder="e.g. Favorites, Science Fiction, Research..." data-i18n-placeholder="albumNamePlaceholder" required maxlength="200" autocomplete="off" />
+                    </div>
+                    <div class="lib-form-group">
+                        <label for="album-desc-input" class="lib-form-label" data-i18n="albumDescLabel">Description (optional)</label>
+                        <textarea id="album-desc-input" class="lib-form-textarea" rows="2" placeholder="Short note about this collection..." data-i18n-placeholder="albumDescPlaceholder" maxlength="500"></textarea>
+                    </div>
+                </div>
+                <div class="lib-modal-footer">
+                    <button type="button" class="lib-btn lib-btn-secondary" data-close-modal="album-modal-backdrop" data-i18n="cancel">Cancel</button>
+                    <button type="submit" id="album-save-btn" class="lib-btn lib-btn-primary" data-i18n="save">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 2. Rename Book Modal -->
+    <div id="book-rename-modal-backdrop" class="lib-modal-backdrop" style="display:none;">
+        <div class="lib-modal-card" role="dialog" aria-modal="true" aria-labelledby="book-rename-modal-title">
+            <div class="lib-modal-header">
+                <h3 id="book-rename-modal-title" class="lib-modal-title" data-i18n="renameBookTitle">Rename Book</h3>
+                <button type="button" class="lib-modal-close-btn" data-close-modal="book-rename-modal-backdrop">&times;</button>
+            </div>
+            <form id="book-rename-form">
+                <input type="hidden" id="rename-book-id" value="" />
+                <div class="lib-modal-body">
+                    <div class="lib-form-group">
+                        <label for="rename-book-title-input" class="lib-form-label" data-i18n="bookTitleLabel">Title *</label>
+                        <input type="text" id="rename-book-title-input" class="lib-form-input" required maxlength="450" autocomplete="off" />
+                    </div>
+                    <div class="lib-form-group">
+                        <label for="rename-book-author-input" class="lib-form-label" data-i18n="bookAuthorLabel">Author (optional)</label>
+                        <input type="text" id="rename-book-author-input" class="lib-form-input" maxlength="450" autocomplete="off" />
+                    </div>
+                </div>
+                <div class="lib-modal-footer">
+                    <button type="button" class="lib-btn lib-btn-secondary" data-close-modal="book-rename-modal-backdrop" data-i18n="cancel">Cancel</button>
+                    <button type="submit" id="rename-book-save-btn" class="lib-btn lib-btn-primary" data-i18n="save">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- 3. Add to Album Modal (From a Book Card) -->
+    <div id="book-albums-modal-backdrop" class="lib-modal-backdrop" style="display:none;">
+        <div class="lib-modal-card" role="dialog" aria-modal="true" aria-labelledby="book-albums-modal-title">
+            <div class="lib-modal-header">
+                <h3 id="book-albums-modal-title" class="lib-modal-title" data-i18n="addToAlbumTitle">Add to Album</h3>
+                <button type="button" class="lib-modal-close-btn" data-close-modal="book-albums-modal-backdrop">&times;</button>
+            </div>
+            <div class="lib-modal-body">
+                <p id="book-albums-target-name" class="lib-modal-subtitle"></p>
+                <div id="book-albums-checkbox-list" class="lib-checkbox-list">
+                    <!-- Dynamic album checkboxes -->
+                </div>
+                <div id="book-albums-no-albums" class="text-secondary py-2" style="display:none;" data-i18n="noAlbumsYet">
+                    No albums created yet.
+                </div>
+                <div class="quick-create-album-row mt-3">
+                    <input type="text" id="quick-create-album-input" class="lib-form-input flex-grow-1" placeholder="Create new album..." data-i18n-placeholder="newAlbumNamePlaceholder" maxlength="200" autocomplete="off" />
+                    <button type="button" id="quick-create-album-btn" class="lib-btn lib-btn-accent flex-shrink-0" data-i18n="create">Create</button>
                 </div>
             </div>
+            <div class="lib-modal-footer">
+                <button type="button" class="lib-btn lib-btn-secondary" data-close-modal="book-albums-modal-backdrop" data-i18n="cancel">Cancel</button>
+                <button type="button" id="book-albums-save-btn" class="lib-btn lib-btn-primary" data-i18n="done">Done</button>
+            </div>
         </div>
+    </div>
 
-        <p id="library-no-results" class="text-secondary" data-i18n="noResults" hidden>No books match your search.</p>
-
-        <div id="library-sections-container" class="library-sections-container">
-            @{
-                var formatGroups = Model
-                    .GroupBy(b => b.Type)
-                    .OrderBy(g => (int)g.Key)
-                    .ToList();
-            }
-
-            @foreach (var group in formatGroups)
-            {
-                var formatCode = group.Key.ToString().ToLowerInvariant();
-                var formatHeadingKey = $"formatHeading_{formatCode}";
-
-                <section class="library-format-section" data-format="@formatCode">
-                    <div class="library-format-header">
-                        <div class="library-format-title-group">
-                            <span class="format-badge format-badge-@formatCode">@group.Key.ToString().ToUpperInvariant()</span>
-                            <h2 class="library-format-heading" data-i18n-format="@formatCode">@group.Key Books</h2>
-                            <span class="library-format-count">(@group.Count())</span>
-                        </div>
-                        <div class="library-format-line"></div>
-                    </div>
-
-                    <div class="book-grid">
-                        @foreach (var book in group)
-                        {
-                            <div class="book-card"
-                                 data-title="@book.Title.ToLowerInvariant()"
-                                 data-author="@((book.Author ?? "").ToLowerInvariant())"
-                                 data-uploaded="@book.UploadedAtUtc.Ticks">
-                                <a class="book-cover-link" asp-controller="Reader" asp-action="Index" asp-route-id="@book.Id">
-                                    <div class="book-cover">
-                                        @if (!string.IsNullOrEmpty(book.CoverImagePath))
-                                        {
-                                            <img src="/library-assets/@book.RecoveryKeyId/@book.Id/@System.IO.Path.GetFileName(book.CoverImagePath)" alt="@book.Title" />
-                                        }
-                                        else
-                                        {
-                                            <div class="book-cover-placeholder"></div>
-                                        }
-                                        <span class="book-type-badge format-badge-@formatCode">@group.Key</span>
-                                    </div>
-                                    <div class="book-title" title="@book.Title">@book.Title</div>
-                                    @if (!string.IsNullOrEmpty(book.Author))
-                                    {
-                                        <div class="book-author">@book.Author</div>
-                                    }
-                                </a>
-                                <form asp-controller="Library" asp-action="Delete" method="post" onsubmit="return confirm(document.documentElement.lang === 'vi' ? 'Bạn có chắc chắn muốn xóa sách này?' : 'Delete this book?');">
-                                    <input type="hidden" name="id" value="@book.Id" />
-                                    <button type="submit" class="btn btn-sm btn-outline-danger book-delete-btn" data-i18n="delete">Delete</button>
-                                </form>
-                            </div>
-                        }
-                    </div>
-                </section>
-            }
+    <!-- 4. Add Multiple Books to an Album Modal -->
+    <div id="album-add-books-modal-backdrop" class="lib-modal-backdrop" style="display:none;">
+        <div class="lib-modal-card lib-modal-card-lg" role="dialog" aria-modal="true" aria-labelledby="album-add-books-title">
+            <div class="lib-modal-header">
+                <h3 id="album-add-books-title" class="lib-modal-title" data-i18n="addBooksToAlbumTitle">Add Books to Album</h3>
+                <button type="button" class="lib-modal-close-btn" data-close-modal="album-add-books-modal-backdrop">&times;</button>
+            </div>
+            <div class="lib-modal-body">
+                <div class="lib-search-filter-row mb-3">
+                    <input type="search" id="modal-books-search-input" class="lib-form-input" placeholder="Filter books by title or author..." data-i18n-placeholder="filterBooksPlaceholder" autocomplete="off" />
+                </div>
+                <div id="album-add-books-grid" class="album-picker-books-grid">
+                    <!-- Dynamic Library Books for Multi-select -->
+                </div>
+                <div id="album-add-books-empty" class="text-secondary text-center py-4" style="display:none;" data-i18n="noBooksToSelect">
+                    All books from your library are already in this album.
+                </div>
+            </div>
+            <div class="lib-modal-footer">
+                <span id="album-add-books-selected-count" class="lib-modal-status-text">0 selected</span>
+                <button type="button" class="lib-btn lib-btn-secondary" data-close-modal="album-add-books-modal-backdrop" data-i18n="cancel">Cancel</button>
+                <button type="button" id="album-add-books-submit-btn" class="lib-btn lib-btn-primary" data-i18n="addSelected">Add Selected</button>
+            </div>
         </div>
-    }
+    </div>
 
-    <!-- Vocabulary Modal (Kho Từ Vựng) -->
+    <!-- 5. Vocabulary Modal (Kho Từ Vựng) -->
     <div id="vocab-modal-backdrop" class="vocab-modal-backdrop" style="display:none;">
         <div class="vocab-modal" role="dialog" aria-modal="true" aria-labelledby="vocab-modal-title">
             <div class="vocab-modal-header">

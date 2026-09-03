@@ -17,6 +17,8 @@ public class AppDbContext : DbContext
     public DbSet<Settings> Settings => Set<Settings>();
     public DbSet<Translation> Translations => Set<Translation>();
     public DbSet<VocabularyItem> VocabularyItems => Set<VocabularyItem>();
+    public DbSet<Album> Albums => Set<Album>();
+    public DbSet<AlbumBook> AlbumBooks => Set<AlbumBook>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -35,6 +37,34 @@ public class AppDbContext : DbContext
                   .OnDelete(DeleteBehavior.Cascade);
 
             entity.HasIndex(b => b.RecoveryKeyId);
+        });
+
+        modelBuilder.Entity<Album>(entity =>
+        {
+            entity.HasOne(a => a.RecoveryKey)
+                  .WithMany(r => r.Albums)
+                  .HasForeignKey(a => a.RecoveryKeyId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(a => a.RecoveryKeyId);
+        });
+
+        modelBuilder.Entity<AlbumBook>(entity =>
+        {
+            entity.HasKey(ab => new { ab.AlbumId, ab.BookId });
+
+            entity.HasOne(ab => ab.Album)
+                  .WithMany(a => a.AlbumBooks)
+                  .HasForeignKey(ab => ab.AlbumId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasOne(ab => ab.Book)
+                  .WithMany(b => b.AlbumBooks)
+                  .HasForeignKey(ab => ab.BookId)
+                  .OnDelete(DeleteBehavior.Cascade);
+
+            entity.HasIndex(ab => ab.AlbumId);
+            entity.HasIndex(ab => ab.BookId);
         });
 
         modelBuilder.Entity<Chapter>(entity =>
