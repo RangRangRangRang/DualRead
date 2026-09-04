@@ -15,8 +15,9 @@
     <div id="sidebar-backdrop" class="sidebar-backdrop"></div>
 
     <aside id="sidebar-left" class="sidebar sidebar-left">
-        <div class="sidebar-section">
+        <div class="sidebar-header-mobile">
             <a class="sidebar-back" data-i18n="backToLibrary" asp-controller="Library" asp-action="Index">&larr; Library</a>
+            <button type="button" class="sidebar-close-btn" aria-label="Close" data-close-sidebar>&times;</button>
         </div>
 
         <div class="sidebar-section">
@@ -84,6 +85,10 @@
     </main>
 
     <aside id="sidebar-right" class="sidebar sidebar-right">
+        <div class="sidebar-header-mobile">
+            <span class="sidebar-header-title" data-i18n="settings">Settings</span>
+            <button type="button" class="sidebar-close-btn" aria-label="Close" data-close-sidebar>&times;</button>
+        </div>
         <div class="sidebar-section">
             <label class="settings-label" data-i18n="darkMode">Dark Mode</label>
             <div class="form-check form-switch">

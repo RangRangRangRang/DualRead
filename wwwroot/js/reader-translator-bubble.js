@@ -112,14 +112,16 @@ export function initBubbleTranslator(ctx) {
             if (rect.width === 0 && rect.height === 0) return;
 
             // Calculate bubble position centered horizontally above the selection
-            const bubbleWidth = 36;
-            const bubbleHeight = 36;
+            const isMobile = window.innerWidth <= 768;
+            const bubbleWidth = isMobile ? 40 : 36;
+            const bubbleHeight = isMobile ? 40 : 36;
             let bubbleLeft = rect.left + (rect.width / 2) - (bubbleWidth / 2);
-            let bubbleTop = rect.top - bubbleHeight - 8;
+            let bubbleTop = rect.top - bubbleHeight - 10;
 
-            // Boundary check: if too close to top edge, show below selection
-            if (bubbleTop < 10) {
-                bubbleTop = rect.bottom + 8;
+            // Boundary check: if too close to top edge or topbar (56px), show below selection
+            const topBoundary = isMobile ? 56 : 10;
+            if (bubbleTop < topBoundary) {
+                bubbleTop = rect.bottom + 10;
             }
             if (bubbleLeft < 10) bubbleLeft = 10;
             if (bubbleLeft + bubbleWidth > window.innerWidth - 10) {
@@ -164,18 +166,23 @@ export function initBubbleTranslator(ctx) {
         hideBubble();
 
         // Calculate popover position
-        const popoverWidth = Math.min(380, window.innerWidth - 24);
+        const isMobile = window.innerWidth <= 768;
+        const popoverWidth = Math.min(380, window.innerWidth - 20);
         let popoverLeft = bubbleRect.left + (bubbleRect.width / 2) - (popoverWidth / 2);
         let popoverTop = bubbleRect.bottom + 10;
 
-        if (popoverLeft < 12) popoverLeft = 12;
-        if (popoverLeft + popoverWidth > window.innerWidth - 12) {
-            popoverLeft = window.innerWidth - popoverWidth - 12;
+        if (popoverLeft < 10) popoverLeft = 10;
+        if (popoverLeft + popoverWidth > window.innerWidth - 10) {
+            popoverLeft = window.innerWidth - popoverWidth - 10;
         }
 
         // If popover goes off bottom of screen, show above selection
+        const topBoundary = isMobile ? 56 : 12;
         if (popoverTop + 240 > window.innerHeight) {
-            popoverTop = Math.max(12, bubbleRect.top - 240);
+            popoverTop = Math.max(topBoundary, bubbleRect.top - 240);
+        }
+        if (popoverTop < topBoundary) {
+            popoverTop = topBoundary;
         }
 
         popover.style.width = `${popoverWidth}px`;

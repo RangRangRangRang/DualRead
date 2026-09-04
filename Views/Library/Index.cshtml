@@ -30,17 +30,23 @@
                 <button type="button" class="lang-seg-btn @(currentLang == "vi" ? "active" : "")" data-lang="vi">VI</button>
             </div>
             <button type="button" id="open-vocab-modal-btn" class="lib-btn lib-btn-secondary" title="View all saved vocabulary" data-i18n-title="vocabNotebookTitle">
-                <span data-i18n="vocabNotebook">Vocabulary Bank</span>
+                <span class="btn-icon">📖</span>
+                <span class="btn-label-vocab" data-i18n="vocabNotebook">Vocabulary Bank</span>
                 <span id="library-vocab-total-count" class="lib-badge-count" style="display:none;">0</span>
             </button>
             <button type="button" class="lib-btn lib-btn-key recovery-badge-btn" title="Click to copy recovery key" data-i18n-title="copyRecoveryKeyTitle"
                     data-copy-key="@ViewBag.RecoveryKeyCode">
+                <span class="recovery-badge-icon">🔑</span>
                 <span class="recovery-badge-text">@ViewBag.RecoveryKeyCode</span>
             </button>
-            <button type="button" id="btn-create-album-header" class="lib-btn lib-btn-accent" style="display:none;" data-i18n="newAlbum">
-                + New Album
+            <button type="button" id="btn-create-album-header" class="lib-btn lib-btn-accent" style="display:none;">
+                <span class="btn-icon">➕</span>
+                <span class="btn-label-album" data-i18n="newAlbum">New Album</span>
             </button>
-            <a id="btn-upload-header" class="lib-btn lib-btn-primary" asp-controller="Library" asp-action="Upload" data-i18n="upload">+ Upload</a>
+            <a id="btn-upload-header" class="lib-btn lib-btn-primary" asp-controller="Library" asp-action="Upload">
+                <span class="btn-icon">➕</span>
+                <span class="btn-label-upload" data-i18n="upload">Upload</span>
+            </a>
         </div>
     </div>
 

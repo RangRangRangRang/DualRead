@@ -39,6 +39,9 @@ export function initUI(ctx) {
             else openMobileSidebar(sidebarRight, rightToggle);
         });
         backdrop?.addEventListener('click', closeMobileSidebars);
+        document.querySelectorAll('[data-close-sidebar]').forEach(btn => {
+            btn.addEventListener('click', closeMobileSidebars);
+        });
 
         [ctx.panelChapters, ctx.panelBookmarks].forEach((panel) => {
             panel?.addEventListener('click', () => {
