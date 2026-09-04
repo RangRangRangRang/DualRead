@@ -8,13 +8,13 @@
     <div class="library-header">
         <div class="library-title-nav">
             <h1 class="library-main-title">
-                <span data-i18n="library">Library</span>
+                <span data-i18n="library">@(currentLang == "vi" ? "Thư viện" : "Library")</span>
                 <span class="library-title-sep">/</span>
-                <span id="library-current-tab-label" class="library-sub-title" data-i18n="allBooks">All Books</span>
+                <span id="library-current-tab-label" class="library-sub-title" data-i18n="allBooks">@(currentLang == "vi" ? "Tất cả sách" : "All Books")</span>
             </h1>
             <div class="library-nav-tabs" role="tablist" aria-label="Library Navigation">
                 <button type="button" id="tab-btn-books" class="lib-tab-btn active" data-tab="books" role="tab" aria-selected="true">
-                    <span data-i18n="allBooks">All Books</span>
+                    <span data-i18n="allBooks">@(currentLang == "vi" ? "Tất cả sách" : "All Books")</span>
                     <span class="lib-tab-count">@Model.Count</span>
                 </button>
                 <button type="button" id="tab-btn-albums" class="lib-tab-btn" data-tab="albums" role="tab" aria-selected="false">
@@ -29,24 +29,20 @@
                 <button type="button" class="lang-seg-btn @(currentLang == "en" ? "active" : "")" data-lang="en">EN</button>
                 <button type="button" class="lang-seg-btn @(currentLang == "vi" ? "active" : "")" data-lang="vi">VI</button>
             </div>
-            <button type="button" id="open-vocab-modal-btn" class="lib-btn lib-btn-secondary" title="View all saved vocabulary" data-i18n-title="vocabNotebookTitle">
-                <span class="btn-icon">📖</span>
-                <span class="btn-label-vocab" data-i18n="vocabNotebook">Vocabulary Bank</span>
+            <a id="btn-upload-header" class="lib-btn lib-btn-primary" asp-controller="Library" asp-action="Upload">
+                <span class="btn-label-upload" data-i18n="upload">@(currentLang == "vi" ? "Tải sách lên" : "Upload")</span>
+            </a>
+            <button type="button" id="open-vocab-modal-btn" class="lib-btn lib-btn-secondary" title="@(currentLang == "vi" ? "Xem tất cả từ vựng đã lưu" : "View all saved vocabulary")" data-i18n-title="vocabNotebookTitle">
+                <span class="btn-label-vocab" data-i18n="vocabNotebook">@(currentLang == "vi" ? "Sổ từ vựng" : "Vocabulary Bank")</span>
                 <span id="library-vocab-total-count" class="lib-badge-count" style="display:none;">0</span>
             </button>
-            <button type="button" class="lib-btn lib-btn-key recovery-badge-btn" title="Click to copy recovery key" data-i18n-title="copyRecoveryKeyTitle"
+            <button type="button" class="lib-btn lib-btn-key recovery-badge-btn" title="@(currentLang == "vi" ? "Click để sao chép mã khôi phục" : "Click to copy recovery key")" data-i18n-title="copyRecoveryKeyTitle"
                     data-copy-key="@ViewBag.RecoveryKeyCode">
-                <span class="recovery-badge-icon">🔑</span>
-                <span class="recovery-badge-text">@ViewBag.RecoveryKeyCode</span>
+                <span class="recovery-badge-content">
+                    <span class="recovery-badge-label" data-i18n="joinCode">@(currentLang == "vi" ? "Mã tham gia" : "Join code")</span>
+                    <span class="recovery-badge-text">@ViewBag.RecoveryKeyCode</span>
+                </span>
             </button>
-            <button type="button" id="btn-create-album-header" class="lib-btn lib-btn-accent" style="display:none;">
-                <span class="btn-icon">➕</span>
-                <span class="btn-label-album" data-i18n="newAlbum">New Album</span>
-            </button>
-            <a id="btn-upload-header" class="lib-btn lib-btn-primary" asp-controller="Library" asp-action="Upload">
-                <span class="btn-icon">➕</span>
-                <span class="btn-label-upload" data-i18n="upload">Upload</span>
-            </a>
         </div>
     </div>
 
@@ -195,10 +191,7 @@
                                             <span class="book-type-badge format-badge-@formatCode">@group.Key</span>
                                         </div>
                                         <div class="book-title" title="@book.Title">@book.Title</div>
-                                        @if (!string.IsNullOrEmpty(book.Author))
-                                        {
-                                            <div class="book-author">@book.Author</div>
-                                        }
+                                        <div class="book-author">@(string.IsNullOrEmpty(book.Author) ? "\u00A0" : book.Author)</div>
                                     </a>
                                     <div class="book-card-actions">
                                         <button type="button" class="book-card-action-btn book-rename-btn"
@@ -207,7 +200,6 @@
                                                 data-book-author="@(book.Author ?? "")"
                                                 title="Rename book"
                                                 data-i18n-title="renameBook">
-                                            <span class="action-icon">✏️</span>
                                             <span class="action-label" data-i18n="rename">Rename</span>
                                         </button>
                                         <button type="button" class="book-card-action-btn book-add-to-album-btn"
@@ -215,13 +207,12 @@
                                                 data-book-title="@book.Title"
                                                 title="Add to album"
                                                 data-i18n-title="addToAlbum">
-                                            <span class="action-icon">➕</span>
                                             <span class="action-label" data-i18n="album">Album</span>
                                         </button>
-                                        <form asp-controller="Library" asp-action="Delete" method="post" onsubmit="return confirm(document.documentElement.lang === 'vi' ? 'Bạn có chắc chắn muốn xóa sách này khỏi thư viện?' : 'Delete this book from library?');" class="d-inline">
+                                        <form asp-controller="Library" asp-action="Delete" method="post" onsubmit="return confirm(document.documentElement.lang === 'vi' ? 'Bạn có chắc chắn muốn xóa sách này khỏi thư viện?' : 'Delete this book from library?');" class="book-card-action-form">
                                             <input type="hidden" name="id" value="@book.Id" />
                                             <button type="submit" class="book-card-action-btn book-delete-btn" title="Delete book" data-i18n-title="delete">
-                                                <span class="action-icon">🗑️</span>
+                                                <span class="action-label" data-i18n="delete">Delete</span>
                                             </button>
                                         </form>
                                     </div>
@@ -250,7 +241,7 @@
             </div>
 
             <button type="button" id="btn-create-album-main" class="lib-btn lib-btn-accent" data-i18n="newAlbum">
-                ➕ <span data-i18n="newAlbum">New Album</span>
+                <span data-i18n="newAlbum">New Album</span>
             </button>
         </div>
 
@@ -259,11 +250,10 @@
         </div>
 
         <div id="albums-empty-state" class="albums-empty-state" style="display:none;">
-            <div class="albums-empty-icon">📁</div>
             <h3 class="albums-empty-title" data-i18n="noAlbumsTitle">No Albums Yet</h3>
             <p class="albums-empty-desc" data-i18n="noAlbumsDesc">Create albums to organize your books into collections like Favorites, Sci-Fi, History, or Reading Lists.</p>
             <button type="button" id="btn-create-first-album" class="lib-btn lib-btn-primary" data-i18n="createFirstAlbum">
-                + Create Your First Album
+                <span data-i18n="createFirstAlbum">Create First Album</span>
             </button>
         </div>
 
@@ -386,7 +376,6 @@
         <div class="vocab-modal" role="dialog" aria-modal="true" aria-labelledby="vocab-modal-title">
             <div class="vocab-modal-header">
                 <div class="vocab-modal-title-group">
-                    <span class="vocab-modal-icon">📖</span>
                     <h2 id="vocab-modal-title" class="vocab-modal-title" data-i18n="vocabModalTitle">Kho Từ Vựng Toàn Thư Viện</h2>
                     <span id="vocab-modal-count-badge" class="vocab-modal-count-badge">0 từ</span>
                 </div>
@@ -409,7 +398,6 @@
             <div class="vocab-modal-body">
                 <div id="vocab-modal-list" class="vocab-modal-grid"></div>
                 <div id="vocab-modal-empty" class="vocab-modal-empty" style="display: none;">
-                    <div class="vocab-empty-icon">🔖</div>
                     <p class="vocab-empty-title" data-i18n="vocabEmptyTitle">Chưa có từ vựng nào</p>
                     <p class="vocab-empty-desc" data-i18n="vocabEmptyDesc">Trong khi đọc sách, hãy bôi đen bất kỳ từ hoặc câu nào và bấm nút ⭐ Lưu từ vựng để ôn tập tại đây.</p>
                 </div>
@@ -424,10 +412,11 @@
             document.querySelectorAll('[data-copy-key]').forEach(function(btn) {
                 btn.addEventListener('click', function() {
                     var key = btn.getAttribute('data-copy-key');
-                    var restore = btn.textContent;
+                    var targetEl = btn.querySelector('.recovery-badge-text') || btn;
+                    var restore = targetEl.textContent;
                     navigator.clipboard.writeText(key).then(function() {
-                        btn.textContent = 'Copied!';
-                        setTimeout(function() { btn.textContent = restore; }, 1500);
+                        targetEl.textContent = document.documentElement.lang === 'vi' ? 'Đã sao chép!' : 'Copied!';
+                        setTimeout(function() { targetEl.textContent = restore; }, 1500);
                     }).catch(function() { });
                 });
             });

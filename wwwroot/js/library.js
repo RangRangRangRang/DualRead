@@ -12,10 +12,11 @@
             library: 'Library',
             allBooks: 'All Books',
             albums: 'Albums',
-            newAlbum: '+ New Album',
-            upload: '+ Upload',
+            newAlbum: 'New Album',
+            upload: 'Upload',
             vocabNotebook: 'Vocabulary Bank',
             vocabNotebookTitle: 'View all saved vocabulary',
+            joinCode: 'Join code',
             copyRecoveryKeyTitle: 'Click to copy recovery key',
             noBooks: 'No books yet. Upload your first EPUB, PDF, or DOCX to get started.',
             searchPlaceholder: 'Search by title or author…',
@@ -52,7 +53,7 @@
             cancel: 'Cancel',
             noAlbumsTitle: 'No Albums Yet',
             noAlbumsDesc: 'Create albums to organize your books into collections like Favorites, Sci-Fi, History, or Reading Lists.',
-            createFirstAlbum: '+ Create Your First Album',
+            createFirstAlbum: 'Create Your First Album',
             noAlbumsYet: 'No albums created yet.',
             addBooksToAlbumTitle: 'Add Books to Album',
             filterBooksPlaceholder: 'Filter books by title or author...',
@@ -60,30 +61,31 @@
             addSelected: 'Add Selected',
             selectedCountSuffix: ' selected',
             booksCountSuffix: ' books',
-            emptyAlbumAddBtn: '➕ Add books to this album',
+            emptyAlbumAddBtn: 'Add books to this album',
             removeBookFromAlbumConfirm: 'Remove this book from this album?',
             deleteAlbumConfirm: 'Are you sure you want to delete this album? Books inside will NOT be deleted.',
             removeFromAlbum: 'Remove',
             removeFromAlbumTitle: 'Remove from album',
-            addBooksBtn: '+ Add Books',
+            addBooksBtn: 'Add Books',
             // Vocab translations
             vocabModalTitle: 'Vocabulary Bank',
             vocabSearchPlaceholder: 'Search words, meanings...',
             vocabEmptyTitle: 'No vocabulary saved',
-            vocabEmptyDesc: 'While reading, select any word or sentence and click ⭐ Save Vocabulary to review here.',
+            vocabEmptyDesc: 'While reading, select any word or sentence and click Save Vocabulary to review here.',
             vocabEmptyFiltered: 'No vocabulary matches your search/filter.',
-            copied: '✓ Copied',
-            copy: '📋 Copy',
+            copied: 'Copied',
+            copy: 'Copy',
             wordsCountSuffix: ' words'
         },
         vi: {
             library: 'Thư viện',
             allBooks: 'Tất cả sách',
             albums: 'Albums',
-            newAlbum: '+ Tạo Album',
-            upload: '+ Tải sách lên',
+            newAlbum: 'Tạo Album',
+            upload: 'Tải sách lên',
             vocabNotebook: 'Sổ từ vựng',
             vocabNotebookTitle: 'Xem tất cả từ vựng đã lưu',
+            joinCode: 'Mã tham gia',
             copyRecoveryKeyTitle: 'Click để sao chép mã khôi phục',
             noBooks: 'Chưa có sách nào. Hãy tải lên tệp EPUB, PDF hoặc DOCX đầu tiên để bắt đầu.',
             searchPlaceholder: 'Tìm theo tên sách hoặc tác giả…',
@@ -120,7 +122,7 @@
             cancel: 'Hủy',
             noAlbumsTitle: 'Chưa có Album nào',
             noAlbumsDesc: 'Tạo các album để sắp xếp sách thành các bộ sưu tập như Sách yêu thích, Khoa học, Lịch sử hoặc Danh sách đọc.',
-            createFirstAlbum: '+ Tạo Album đầu tiên',
+            createFirstAlbum: 'Tạo Album đầu tiên',
             noAlbumsYet: 'Chưa có album nào được tạo.',
             addBooksToAlbumTitle: 'Thêm sách vào Album',
             filterBooksPlaceholder: 'Lọc sách theo tên hoặc tác giả...',
@@ -128,20 +130,20 @@
             addSelected: 'Thêm sách đã chọn',
             selectedCountSuffix: ' sách đã chọn',
             booksCountSuffix: ' cuốn',
-            emptyAlbumAddBtn: '➕ Thêm sách vào album này',
+            emptyAlbumAddBtn: 'Thêm sách vào album này',
             removeBookFromAlbumConfirm: 'Gỡ cuốn sách này ra khỏi album?',
             deleteAlbumConfirm: 'Bạn có chắc chắn muốn xóa album này không? Sách gốc trong thư viện sẽ KHÔNG bị mất.',
             removeFromAlbum: 'Gỡ',
             removeFromAlbumTitle: 'Gỡ khỏi album',
-            addBooksBtn: '+ Thêm sách',
+            addBooksBtn: 'Thêm sách',
             // Vocab translations
             vocabModalTitle: 'Kho Từ Vựng Toàn Thư Viện',
             vocabSearchPlaceholder: 'Tìm từ vựng, nghĩa tiếng Việt...',
             vocabEmptyTitle: 'Chưa có từ vựng nào',
-            vocabEmptyDesc: 'Trong khi đọc sách, hãy bôi đen bất kỳ từ hoặc câu nào và bấm nút ⭐ Lưu từ vựng để ôn tập tại đây.',
+            vocabEmptyDesc: 'Trong khi đọc sách, hãy bôi đen bất kỳ từ hoặc câu nào và bấm nút Lưu từ vựng để ôn tập tại đây.',
             vocabEmptyFiltered: 'Không tìm thấy từ vựng nào khớp với bộ lọc.',
-            copied: '✓ Đã chép',
-            copy: '📋 Sao chép',
+            copied: 'Đã chép',
+            copy: 'Sao chép',
             wordsCountSuffix: ' từ'
         }
     };
@@ -347,10 +349,7 @@
             }
 
             if (btnUploadHeader) {
-                btnUploadHeader.style.display = tab === 'books' ? 'inline-flex' : 'none';
-            }
-            if (btnCreateAlbumHeader) {
-                btnCreateAlbumHeader.style.display = tab === 'albums' ? 'inline-flex' : 'none';
+                btnUploadHeader.style.display = 'inline-flex';
             }
 
             updateTabLabel();
@@ -947,9 +946,7 @@
                             ? `<img src="${escapeHtml(book.coverImagePath)}" alt="${escapeHtml(book.title)}" loading="lazy" />`
                             : `<div class="book-cover-placeholder"></div>`;
 
-                        var authorHtml = book.author
-                            ? `<div class="album-book-author" title="${escapeHtml(book.author)}">${escapeHtml(book.author)}</div>`
-                            : '';
+                        var authorHtml = `<div class="album-book-author" title="${escapeHtml(book.author || '')}">${escapeHtml(book.author || '') || '&nbsp;'}</div>`;
 
                         return `
                             <div class="album-book-card" data-book-id="${book.id}">
@@ -966,13 +963,13 @@
                                             data-book-title="${escapeHtml(book.title)}"
                                             data-book-author="${escapeHtml(book.author || '')}"
                                             title="${dict.renameBook}">
-                                        ✏️ <span class="btn-text">${dict.rename}</span>
+                                        <span class="btn-text">${dict.rename}</span>
                                     </button>
                                     <button type="button" class="album-action-btn album-book-remove-btn"
                                             data-album-id="${album.id}"
                                             data-book-id="${book.id}"
                                             title="${dict.removeFromAlbumTitle}">
-                                        🗑️ <span class="btn-text">${dict.removeFromAlbum}</span>
+                                        <span class="btn-text">${dict.removeFromAlbum}</span>
                                     </button>
                                 </div>
                             </div>
@@ -993,18 +990,18 @@
                                         data-album-name="${escapeHtml(album.name)}"
                                         data-album-desc="${escapeHtml(album.description || '')}"
                                         title="${dict.rename}">
-                                    ✏️ <span class="btn-text-responsive">${dict.rename}</span>
+                                    ${dict.rename}
                                 </button>
                                 <button type="button" class="lib-btn lib-btn-sm lib-btn-danger album-delete-btn"
                                         data-album-id="${album.id}"
                                         title="${dict.delete}">
-                                    🗑️ <span class="btn-text-responsive">${dict.delete}</span>
+                                    ${dict.delete}
                                 </button>
                                 <button type="button" class="lib-btn lib-btn-sm lib-btn-accent album-add-books-btn"
                                         data-album-id="${album.id}"
                                         data-album-name="${escapeHtml(album.name)}"
                                         title="${dict.addBooksBtn}">
-                                    ➕ <span class="btn-text-responsive">${dict.addBooksBtn}</span>
+                                    ${dict.addBooksBtn}
                                 </button>
                             </div>
                         </div>
