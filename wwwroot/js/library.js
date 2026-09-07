@@ -184,7 +184,6 @@
         var albumForm = document.getElementById('album-form');
         var albumEditIdInput = document.getElementById('album-edit-id');
         var albumNameInput = document.getElementById('album-name-input');
-        var albumDescInput = document.getElementById('album-desc-input');
         var albumModalTitle = document.getElementById('album-modal-title');
 
         var bookRenameModalBackdrop = document.getElementById('book-rename-modal-backdrop');
@@ -802,7 +801,6 @@
         function openCreateAlbumModal() {
             albumEditIdInput.value = '';
             albumNameInput.value = '';
-            if (albumDescInput) albumDescInput.value = '';
 
             var currentL = document.documentElement.lang || 'en';
             var dict = libraryTranslations[currentL] || libraryTranslations.en;
@@ -812,10 +810,9 @@
             albumNameInput.focus();
         }
 
-        function openRenameAlbumModal(albumId, currentName, currentDesc) {
+        function openRenameAlbumModal(albumId, currentName) {
             albumEditIdInput.value = albumId;
             albumNameInput.value = currentName || '';
-            if (albumDescInput) albumDescInput.value = currentDesc || '';
 
             var currentL = document.documentElement.lang || 'en';
             var dict = libraryTranslations[currentL] || libraryTranslations.en;
@@ -840,7 +837,6 @@
                 e.preventDefault();
                 var albumId = albumEditIdInput.value;
                 var name = (albumNameInput.value || '').trim();
-                var desc = albumDescInput ? (albumDescInput.value || '').trim() : '';
 
                 if (!name) return;
 
@@ -851,7 +847,7 @@
                 fetch(url, {
                     method: method,
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ name: name, description: desc })
+                    body: JSON.stringify({ name: name })
                 })
                 .then(function (res) {
                     if (!res.ok) throw new Error('Failed to save album');
@@ -988,7 +984,6 @@
                                 <button type="button" class="lib-btn lib-btn-sm lib-btn-secondary album-rename-btn"
                                         data-album-id="${album.id}"
                                         data-album-name="${escapeHtml(album.name)}"
-                                        data-album-desc="${escapeHtml(album.description || '')}"
                                         title="${dict.rename}">
                                     ${dict.rename}
                                 </button>
@@ -1060,8 +1055,7 @@
                 btn.addEventListener('click', function () {
                     var albumId = btn.getAttribute('data-album-id');
                     var name = btn.getAttribute('data-album-name');
-                    var desc = btn.getAttribute('data-album-desc');
-                    openRenameAlbumModal(albumId, name, desc);
+                    openRenameAlbumModal(albumId, name);
                 });
             });
 

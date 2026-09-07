@@ -91,7 +91,6 @@
         {
             <div class="library-empty-box">
                 <p class="text-secondary" data-i18n="noBooks">No books yet. Upload your first EPUB, PDF, or DOCX to get started.</p>
-                <a class="lib-btn lib-btn-primary mt-2" asp-controller="Library" asp-action="Upload" data-i18n="upload">+ Upload</a>
             </div>
         }
         else
@@ -277,10 +276,6 @@
                     <div class="lib-form-group">
                         <label for="album-name-input" class="lib-form-label" data-i18n="albumNameLabel">Album Name *</label>
                         <input type="text" id="album-name-input" class="lib-form-input" placeholder="e.g. Favorites, Science Fiction, Research..." data-i18n-placeholder="albumNamePlaceholder" required maxlength="200" autocomplete="off" />
-                    </div>
-                    <div class="lib-form-group">
-                        <label for="album-desc-input" class="lib-form-label" data-i18n="albumDescLabel">Description (optional)</label>
-                        <textarea id="album-desc-input" class="lib-form-textarea" rows="2" placeholder="Short note about this collection..." data-i18n-placeholder="albumDescPlaceholder" maxlength="500"></textarea>
                     </div>
                 </div>
                 <div class="lib-modal-footer">
