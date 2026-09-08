@@ -41,6 +41,31 @@ export function initTTS(ctx) {
     }
     loadVoices();
 
+    function formatVoiceName(voice) {
+        let raw = voice.name || '';
+        let clean = raw
+            .replace(/Online\s*\(Natural\)/gi, '')
+            .replace(/Multilingual/gi, '')
+            .replace(/\b(Microsoft|Google|Apple)\b/gi, '')
+            .replace(/\s*-\s*[^-()]+(?=\s*\()/gi, '')
+            .trim();
+
+        const lang = (voice.lang || '').trim();
+        let region = '';
+        if (lang.includes('-') || lang.includes('_')) {
+            const parts = lang.split(/[-_]/);
+            region = parts[1].toUpperCase();
+            if (region === 'GB') region = 'UK';
+        } else if (lang) {
+            region = lang.toUpperCase();
+        }
+
+        clean = clean.replace(/^[-–—:\s]+|[-–—:\s]+$/g, '').trim();
+        if (!clean) clean = voice.name;
+
+        return region ? `${clean} (${region})` : clean;
+    }
+
     function populateVoiceSelect() {
         if (!ctx.settingTtsVoice) return;
         const dict = getDict();
@@ -55,34 +80,48 @@ export function initTTS(ctx) {
 
         if (availableVoices.length === 0) return;
 
-        // Group voices: English, Vietnamese, Others
-        const enVoices = [];
         const viVoices = [];
+        const enPriorityVoices = [];
+        const enOtherVoices = [];
         const otherVoices = [];
+        const primaryEnRegions = ['US', 'GB', 'UK', 'AU', 'CA'];
 
         availableVoices.forEach(v => {
-            const lang = v.lang.toLowerCase();
-            if (lang.startsWith('en')) enVoices.push(v);
-            else if (lang.startsWith('vi')) viVoices.push(v);
-            else otherVoices.push(v);
+            const lang = (v.lang || '').toLowerCase();
+            if (lang.startsWith('vi')) {
+                viVoices.push(v);
+            } else if (lang.startsWith('en')) {
+                const isPrimary = primaryEnRegions.some(reg => lang.includes(reg.toLowerCase()));
+                if (isPrimary) enPriorityVoices.push(v);
+                else enOtherVoices.push(v);
+            } else {
+                otherVoices.push(v);
+            }
         });
 
         function appendGroup(label, list) {
             if (list.length === 0) return;
             const group = document.createElement('optgroup');
             group.label = label;
+            list.sort((a, b) => formatVoiceName(a).localeCompare(formatVoiceName(b)));
+
             list.forEach(v => {
                 const opt = document.createElement('option');
                 opt.value = v.voiceURI || v.name;
-                opt.textContent = `${v.name} (${v.lang})`;
+                opt.textContent = formatVoiceName(v);
                 group.appendChild(opt);
             });
             ctx.settingTtsVoice.appendChild(group);
         }
 
-        appendGroup('English', enVoices);
         appendGroup('Tiếng Việt', viVoices);
-        appendGroup('Other Languages', otherVoices);
+        appendGroup('English (US / UK / AU / CA)', enPriorityVoices);
+        if (enOtherVoices.length > 0) {
+            appendGroup('English (Other Regions)', enOtherVoices);
+        }
+        if (otherVoices.length > 0) {
+            appendGroup('Other Languages', otherVoices);
+        }
 
         ctx.settingTtsVoice.value = currentVal || 'auto';
     }
@@ -319,12 +358,6 @@ export function initTTS(ctx) {
         if (ctx.ttsSpeedLabel) {
             ctx.ttsSpeedLabel.textContent = `${speed}x`;
         }
-        if (ctx.settingTtsRate) {
-            ctx.settingTtsRate.value = speed;
-        }
-        if (ctx.settingTtsRateVal) {
-            ctx.settingTtsRateVal.textContent = `${speed}x`;
-        }
 
         if (ctx.ttsSpeedMenu) {
             ctx.ttsSpeedMenu.querySelectorAll('.tts-speed-option').forEach(opt => {
@@ -461,13 +494,6 @@ export function initTTS(ctx) {
             if (isPlaying && !isPaused && currentIndex >= 0) {
                 playParagraph(currentIndex);
             }
-        });
-    }
-
-    if (ctx.settingTtsRate) {
-        ctx.settingTtsRate.addEventListener('input', (e) => {
-            const speed = parseFloat(e.target.value) || 1.0;
-            setSpeed(speed);
         });
     }
 

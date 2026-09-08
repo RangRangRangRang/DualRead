@@ -67,9 +67,9 @@
                 <span class="translate-toggle-icon" aria-hidden="true">&#127760;</span>
                 <span class="translate-toggle-label" data-i18n="translateToggle">Translate this page</span>
             </button>
-            <button type="button" id="tts-toggle" class="tts-toggle-btn" aria-pressed="false" data-i18n-aria="readAloud" title="Read Aloud">
+            <button type="button" id="tts-toggle" class="tts-toggle-btn" aria-pressed="false" data-i18n-aria="readAloud" title="Audio">
                 <span class="tts-toggle-icon" aria-hidden="true">&#127911;</span>
-                <span class="tts-toggle-label" data-i18n="readAloud">Read Aloud</span>
+                <span class="tts-toggle-label" data-i18n="readAloud">Audio</span>
             </button>
             <a id="export-translation-btn" class="export-translation-btn" href="@Url.Action("ExportTranslation", "Reader", new { id = Model.BookId })" data-i18n-aria="exportTranslation" title="Export translation (.docx)">
                 <span class="export-translation-icon" aria-hidden="true">&#128190;</span>
@@ -182,15 +182,10 @@
         </div>
 
         <div class="sidebar-section text-only-setting">
-            <label class="settings-label" for="setting-tts-voice" data-i18n="ttsVoice">Speech Voice</label>
+            <label class="settings-label" for="setting-tts-voice" data-i18n="ttsVoice">Voice</label>
             <select id="setting-tts-voice" class="form-select form-select-sm settings-input">
                 <option value="auto" data-i18n="ttsVoiceAuto">Auto (Recommended)</option>
             </select>
-        </div>
-
-        <div class="sidebar-section text-only-setting">
-            <label class="settings-label" for="setting-tts-rate"><span data-i18n="ttsSpeed">Speech Speed</span> <span id="setting-tts-rate-val">1.0x</span></label>
-            <input type="range" min="0.5" max="2.0" step="0.25" id="setting-tts-rate" value="1.0" class="form-range">
         </div>
     </aside>
 </div>

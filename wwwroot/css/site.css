@@ -1080,6 +1080,10 @@ body.theme-sepia .pdf-page-image {
     background-color: var(--eb-bg) !important;
     color: var(--eb-text) !important;
     border-color: var(--eb-border) !important;
+    max-width: 100%;
+    text-overflow: ellipsis;
+    overflow: hidden;
+    font-size: 0.84rem;
 }
 
 /* --- Top Bar & Translation --- */
