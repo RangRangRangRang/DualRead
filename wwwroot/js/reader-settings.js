@@ -27,6 +27,7 @@ export function initSettings(ctx) {
         ctx.api.renderBookmarksList?.();
         ctx.api.refreshVocabularyUI?.();
         ctx.api.updateBubbleAndPopoverLanguage?.();
+        ctx.api.tts?.populateVoiceSelect?.();
     }
 
     function loadSettings() {

@@ -36,6 +36,18 @@ export function createReaderContext() {
         settingLanguage: get('setting-language'),
         settingDarkMode: get('setting-dark-mode'),
         settingEyeComfort: get('setting-eye-comfort'),
+        ttsToggleBtn: get('tts-toggle'),
+        ttsPlayer: get('reader-tts-player'),
+        ttsPlayPauseBtn: get('tts-play-pause-btn'),
+        ttsPrevBtn: get('tts-prev-btn'),
+        ttsNextBtn: get('tts-next-btn'),
+        ttsStopBtn: get('tts-stop-btn'),
+        ttsSpeedBtn: get('tts-speed-btn'),
+        ttsSpeedLabel: get('tts-speed-label'),
+        ttsSpeedMenu: get('tts-speed-menu'),
+        settingTtsVoice: get('setting-tts-voice'),
+        settingTtsRate: get('setting-tts-rate'),
+        settingTtsRateVal: get('setting-tts-rate-val'),
         chapters: readerData.chapters || [],
         bookId: readerData.bookId,
         currentChapterIndex: 0,
@@ -89,7 +101,16 @@ export const translations = {
         savedVocab: 'Saved in notebook',
         transErrorTitle: 'Translation Error',
         transErrorDesc: 'Could not connect to translation service. Please try again later.',
-        bookFallback: 'Book'
+        bookFallback: 'Book',
+        readAloud: 'Read Aloud',
+        ttsPlay: 'Play',
+        ttsPause: 'Pause',
+        ttsStop: 'Stop and close',
+        ttsPrev: 'Previous paragraph',
+        ttsNext: 'Next paragraph',
+        ttsSpeed: 'Speech Speed',
+        ttsVoice: 'Speech Voice',
+        ttsVoiceAuto: 'Auto (Recommended)'
     },
     vi: {
         backToLibrary: '← Thư viện',
@@ -127,6 +148,15 @@ export const translations = {
         savedVocab: 'Đã lưu vào sổ',
         transErrorTitle: 'Lỗi dịch thuật',
         transErrorDesc: 'Không thể kết nối đến máy chủ dịch thuật. Vui lòng thử lại sau.',
-        bookFallback: 'Sách'
+        bookFallback: 'Sách',
+        readAloud: 'Nghe đọc sách',
+        ttsPlay: 'Phát giọng đọc',
+        ttsPause: 'Tạm dừng',
+        ttsStop: 'Dừng và đóng',
+        ttsPrev: 'Đoạn trước',
+        ttsNext: 'Đoạn sau',
+        ttsSpeed: 'Tốc độ giọng đọc',
+        ttsVoice: 'Giọng đọc',
+        ttsVoiceAuto: 'Tự động (Khuyên dùng)'
     }
 };

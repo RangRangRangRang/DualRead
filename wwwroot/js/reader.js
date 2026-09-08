@@ -5,6 +5,7 @@ import { initNavigation } from './reader-navigation.js';
 import { initSettings } from './reader-settings.js';
 import { initUI } from './reader-ui.js';
 import { initBubbleTranslator } from './reader-translator-bubble.js';
+import { initTTS } from './reader-tts.js';
 
 document.addEventListener('DOMContentLoaded', () => {
     const ctx = createReaderContext();
@@ -20,6 +21,7 @@ document.addEventListener('DOMContentLoaded', () => {
     initSettings(ctx);
     initUI(ctx);
     initBubbleTranslator(ctx);
+    initTTS(ctx);
 
     ctx.api.renderNavList();
     ctx.api.renderBookmarksList();
